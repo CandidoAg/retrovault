@@ -113,3 +113,9 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 - [ ] **Observabilidad:** Tracing distribuido con OpenTelemetry para visualizar el viaje de cada orden.
 - [ ] **Circuit Breaker:** Gestión de fallos para evitar caídas en cascada.
 - [ ] **Graceful Shutdown:** Cierre de conexiones seguro para evitar pérdida de datos.
+
+### ☁️ Fase 6: Cloud & Deployment (The Grand Finale)
+- [ ] **Docker Optimization:** Multi-stage builds para reducir el tamaño de las imágenes.
+- [ ] **Kubernetes Orchestration:** Configuración de clúster para manejar el auto-scaling y la auto-curación de los microservicios.
+- [ ] **Continuous Deployment (CD):** Despliegue automático al clúster tras pasar la Fase 3.
+- [ ] **Live Demo:** URL pública para interactuar con la versión de producción de RetroVault.
