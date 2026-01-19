@@ -6,7 +6,10 @@
   "description": "Retro tech e-commerce - Monorepo",
   "scripts": {
     "test": "pnpm -r exec vitest",
-    "dev": "pnpm -r run dev"
+    "dev": "pnpm -r run dev",
+    "docker:up": "docker compose --env-file ./services/catalog/.env --env-file ./services/orders/.env up -d",
+    "docker:down": "docker compose down -v",
+    "db:push": "pnpm --filter catalog exec prisma db push && pnpm --filter orders exec prisma db push && pnpm --filter catalog exec prisma generate && pnpm --filter orders exec prisma generate"
   },
   "devDependencies": {
     "@types/node": "^25.0.9",

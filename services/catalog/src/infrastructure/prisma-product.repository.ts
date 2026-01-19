@@ -13,6 +13,7 @@ export class PrismaProductRepository implements ProductRepository {
         stock: product.stock 
       },
       create: { 
+        id: product.id,
         name: product.name, 
         price: product.price, 
         stock: product.stock, 

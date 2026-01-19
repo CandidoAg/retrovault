@@ -1,22 +1,30 @@
-# Dependencias
+# Dependencies
 node_modules/
 .pnpm-debug.log
 
-# Variables de entorno (¡MUY IMPORTANTE!)
+# Environment variables (Security)
+# We ignore the real .env files but NOT the .env.example files
 .env
 .env.local
+.env.test
 
-# Prisma y Base de datos
+# Prisma generated client
+# This is generated on each machine via pnpm exec prisma generate
 /services/**/src/infrastructure/generated/
+
+# Local databases and logs
 *.db
 *.db-journal
+logs/
+*.log
 
-# Compilación y dist
+# Compilation and cache
 dist/
 build/
 .tsx/
 
-# IDEs
+# IDEs and System files
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db

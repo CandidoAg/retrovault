@@ -18,23 +18,43 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con A
 - **Infraestructura**: Docker & Docker Compose
 
 ## ⚙️ Configuración de Variables de Entorno (.env)
-Debes crear un archivo .env en la raíz de la carpeta de cada microservicio:
+> **AVISO DE SEGURIDAD:** Las siguientes configuraciones están diseñadas exclusivamente para **entornos de desarrollo local**. Para despliegues en **producción**, es imperativo sustituir las credenciales por contraseñas robustas y cambiar localhost por la dirección IP o el Host correspondiente a su infraestructura de base de datos.
 
 ### `services/catalog/.env`
 ```env
-DATABASE_URL="postgresql://admin:password123@localhost:5433/catalog_db"
+POSTGRES_USER=admin_catalog
+POSTGRES_PASSWORD=catalog_pass_123
+POSTGRES_DB=catalog_db
+CATALOG_DB_PORT=5433
+CATALOG_DB_IP=localhost
+
+DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${CATALOG_DB_IP}:${CATALOG_DB_PORT}/${POSTGRES_DB}"
 KAFKA_BROKERS="localhost:9092"
 ```
 ### `services/orders/.env`
 ```env
-DATABASE_URL="postgresql://admin:password123@localhost:5434/orders_db"
+POSTGRES_USER=admin_orders
+POSTGRES_PASSWORD=orders_pass_123
+POSTGRES_DB=orders_db
+ORDERS_DB_PORT=5434
+ORDERS_DB_IP=localhost
+
+DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${ORDERS_DB_IP}:${ORDERS_DB_PORT}/${POSTGRES_DB}"
 KAFKA_BROKERS="localhost:9092"
 ```
+
 ## 🏗️ Guía de Instalación y Uso
+0. Preparación de variables de entorno
+Antes de nada, debes crear los archivos reales a partir de las plantillas. Esto es necesario para que Docker y Prisma sepan cómo conectarse a las bases de datos:
+    ```bash
+    # Desde la raíz del proyecto:
+    cp services/catalog/.env.example services/catalog/.env
+    cp services/orders/.env.example services/orders/.env
+    ```
 1. Levantar Infraestructura (Docker)
 Desde la raíz del proyecto, inicia los servicios de base de datos y mensajería:
     ```bash
-    docker-compose up -d
+    pnpm docker:up
     ```
 2. Instalación de dependencias
 Utiliza pnpm para instalar todos los paquetes del monorepositorio:
@@ -42,24 +62,9 @@ Utiliza pnpm para instalar todos los paquetes del monorepositorio:
     pnpm install
     ```
 3. Preparación de Bases de Datos (Prisma)
-Sincroniza los esquemas para generar las tablas y los clientes de Prisma.
-
-    ***En el servicio Catalog:***
-
+Sincroniza los esquemas para generar las tablas y los clientes de Prisma en todos los microservicios con un solo comando:
     ```bash
-    cd services/catalog
-    pnpm exec prisma db push
-    pnpm exec prisma generate
-    cd ../..
-    ```
-
-    ***En el servicio Orders:***
-
-    ```bash
-    cd services/orders
-    pnpm exec prisma db push
-    pnpm exec prisma generate
-    cd ../..
+    pnpm db:push
     ```
 ## 🧪 Ejecución de Tests de Integración
 Para validar la comunicación bidireccional y la sincronización de stock, abre dos terminales:

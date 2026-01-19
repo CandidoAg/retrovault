@@ -26,20 +26,12 @@ services:
   # BASES DE DATOS (POSTGRESQL)
   catalog-db:
     image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_DB: catalog_db
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password123
+    env_file: ./services/catalog/.env
     ports:
-      - "5433:5432" # Puerto 5433 para Catálogo
+      - "${CATALOG_DB_PORT}:5432" # Puerto 5433 para Catálogo
 
   orders-db:
     image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_DB: orders_db
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password123
+    env_file: ./services/orders/.env
     ports:
-      - "5434:5432" # Puerto 5434 para Pedidos
+      - "${ORDERS_DB_PORT}:5432" # Puerto 5434 para Pedidos
