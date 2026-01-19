@@ -1,13 +1,6 @@
 # 🕹️ RetroVault: Arquitectura de Microservicios
 Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con Arquitectura Hexagonal, DDD (Domain-Driven Design) y comunicación asíncrona mediante Kafka.
 
-
-## 🚀 Estado del Sistema
-- **Catalog Service**: (Activo) Gestión de inventario, productos y sincronización de stock mediante UUIDs.
-- **Orders Service**: (Activo) Procesamiento de pedidos y réplica local de productos para alta disponibilidad.
-- **Payment Service**: ⏳ (En desarrollo)
-- **Frontend**: ⏳ (Pendiente)
-
 ## 🛠️ Tecnologías Principales
 - **Lenguaje**: TypeScript
 - **Runtime**: Node.js (tsx para ejecución directa)
@@ -87,3 +80,36 @@ pnpm exec tsx src/test-orders.ts
 * Orders simula una compra y publica el evento order-events.
 * Catalog consume la orden, descuenta el stock y publica el producto actualizado.
 * Orders recibe la actualización y sincroniza su stock local automáticamente.
+
+## 🗺️ Roadmap del Proyecto
+
+Este proyecto sigue una evolución modular, desde la base de la comunicación asíncrona hasta la resiliencia avanzada de sistemas distribuidos.
+
+### ✅ Fase 0: Cimientos y Comunicación (Completado)
+- **Catalog Service:** Microservicio con arquitectura hexagonal para la gestión de inventario.
+- **Orders Service:** Microservicio para la creación y gestión de pedidos.
+- **Mensajería con Kafka:** Comunicación desacoplada entre servicios mediante eventos.
+- **Persistencia Independiente:** Bases de datos PostgreSQL dedicadas por servicio con Prisma ORM.
+- **Orquestación con Docker:** Entorno de desarrollo unificado con Docker Compose.
+
+### 🏗️ Fase 1: Transacciones Distribuidas (En Proceso)
+- [ ] **Payment Service:** Nuevo microservicio para el procesamiento financiero.
+- [ ] **Patrón Saga (Coreografía):** Implementación de lógica de compensación. Si el pago falla, se dispara un evento para que `Catalog` restaure el stock y `Orders` marque la orden como fallida automáticamente.
+
+### 🛡️ Fase 2: Contratos de Datos y Validación
+- [ ] **Shared Schemas (Zod):** Centralización de contratos de eventos en `packages/shared`.
+- [ ] **Validación Estricta:** Garantizar que ningún mensaje corrupto sea procesado por los microservicios.
+
+### 🧪 Fase 3: Calidad y Automatización (CI/CD)
+- [ ] **Testing de Integración:** Uso de **Testcontainers** para pruebas reales con contenedores efímeros de Postgres y Kafka.
+- [ ] **GitHub Actions:** Pipeline automatizado para validar el build, los tests y la sincronización de DB en cada `push`.
+
+### 💻 Fase 4: Seguridad y Frontend
+- [ ] **API Gateway:** Punto de entrada único con ruteo inteligente.
+- [ ] **Autenticación JWT:** Seguridad centralizada para proteger los recursos del sistema.
+- [ ] **Frontend (Next.js):** Interfaz de usuario profesional para la navegación y compra de productos.
+
+### 📈 Fase 5: Resiliencia y Observabilidad (Enterprise)
+- [ ] **Observabilidad:** Tracing distribuido con OpenTelemetry para visualizar el viaje de cada orden.
+- [ ] **Circuit Breaker:** Gestión de fallos para evitar caídas en cascada.
+- [ ] **Graceful Shutdown:** Cierre de conexiones seguro para evitar pérdida de datos.
