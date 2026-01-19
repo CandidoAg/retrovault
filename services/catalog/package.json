@@ -1,0 +1,17 @@
+{
+    "name": "@retrovault/catalog",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "dependencies": {
+        "@prisma/client": "^6.19.2",
+        "@retrovault/shared": "workspace:*",
+        "kafkajs": "^2.2.4",
+        "uuid": "^13.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^25.0.9",
+        "@types/uuid": "^11.0.0",
+        "prisma": "^6.19.2"
+    }
+}

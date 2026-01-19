@@ -1,0 +1,20 @@
+{
+  "name": "retrovault",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Retro tech e-commerce - Monorepo",
+  "scripts": {
+    "test": "pnpm -r exec vitest",
+    "dev": "pnpm -r run dev"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "eslint": "^9.39.2",
+    "prettier": "^3.7.4",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  }
+}

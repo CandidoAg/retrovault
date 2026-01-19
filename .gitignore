@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+.pnpm-debug.log
+
+# Variables de entorno (¡MUY IMPORTANTE!)
+.env
+.env.local
+
+# Prisma y Base de datos
+/services/**/src/infrastructure/generated/
+*.db
+*.db-journal
+
+# Compilación y dist
+dist/
+build/
+.tsx/
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
