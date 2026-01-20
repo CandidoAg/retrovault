@@ -1,6 +1,7 @@
 import { Kafka, logLevel } from 'kafkajs';
+import { env } from '../config/env.js';
 export const kafka = new Kafka({
   clientId: 'catalog-service',
-  brokers: ['localhost:9092'],
+  brokers: [env.KAFKA_BROKERS],
   logLevel: logLevel.NOTHING
 });

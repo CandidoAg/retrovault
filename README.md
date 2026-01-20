@@ -6,6 +6,7 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![Zod](https://img.shields.io/badge/zod-%233068b7.svg?style=for-the-badge&logo=zod&logoColor=white)
 ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka)
 ![Turborepo](https://img.shields.io/badge/turborepo-000000?style=for-the-badge&logo=turborepo&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
@@ -15,6 +16,7 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 - **Runtime**: Node.js (tsx para ejecución directa)
 - **Base de Datos**: PostgreSQL (Instancias independientes por servicio)
 - **ORM**: Prisma
+- **Validación de Datos**: Zod (Validación estricta de variables de entorno y contratos de Kafka).
 - **Mensajería**: Apache Kafka (KafkaJS)
 - **Gestor de Monorepo**: Turborepo (Orquestación de tareas y caché persistente).
 - **Gestor de Paquetes**: pnpm
@@ -59,6 +61,11 @@ DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${PAYMENT_DB_IP
 KAFKA_BROKERS="localhost:9092"
 STRIPE_SECRET_KEY=sk_test_... # Tu clave secreta de Stripe (Test Mode)
 ```
+
+## 🛡️ Validación Estricta (Fail-Fast)
+El sistema utiliza **Zod** para garantizar que el entorno sea seguro antes de arrancar:
+- **Variables de Entorno:** El microservicio no inicia si faltan credenciales o el formato es inválido.
+- **Contratos de Eventos:** Validación de mensajes en Kafka para evitar el procesamiento de datos corruptos.
 
 ## 🏗️ Guía de Instalación y Uso
 0. Preparación de variables de entorno
@@ -107,7 +114,6 @@ pnpm dev
     - **Orders** marca la orden como ``CANCELLED``.
 
 ## 🗺️ Roadmap del Proyecto
-
 Este proyecto sigue una evolución modular, desde la base de la comunicación asíncrona hasta la resiliencia avanzada de sistemas distribuidos.
 
 ### ✅ Fase 0: Cimientos y Comunicación (Completado)
@@ -123,9 +129,9 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 - **Patrón Saga (Coreografía):** Lógica de compensación automática funcional ante errores de terceros.
 - **Consistencia Eventual**: Sincronización de stock tras fallos verificada en tiempo real.
 
-### 🛡️ Fase 2: Contratos de Datos y Validación
-- [ ] **Shared Schemas (Zod):** Centralización de contratos de eventos en `packages/shared`.
-- [ ] **Validación Estricta:** Garantizar que ningún mensaje corrupto sea procesado por los microservicios.
+### ✅ Fase 2: Contratos de Datos y Validación (Completado)
+- **Validación con Zod:** Implementada en la carga de configuración (.env) y en los esquemas de eventos de Kafka.
+- **Esquemas Compartidos:** Centralización de tipos en el paquete shared para consistencia entre servicios.
 
 ### 🧪 Fase 3: Calidad y Automatización (CI/CD)
 - [ ] **Testing de Integración:** Uso de **Testcontainers** para pruebas reales con contenedores efímeros de Postgres y Kafka.

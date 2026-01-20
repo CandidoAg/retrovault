@@ -1,5 +1,6 @@
 import { kafka } from './kafka.client.js';
 import { DecreaseStockUseCase } from '../application/decrease-stock.usecase.js';
+import { OrderCreatedEventSchema } from '@retrovault/shared'; 
 
 export class OrderCreatedConsumer {
   private consumer = kafka.consumer({ groupId: 'catalog-group' });
@@ -12,13 +13,18 @@ export class OrderCreatedConsumer {
     await this.consumer.run({
       eachMessage: async ({ message }) => {
         if (!message.value) return;
-        const event = JSON.parse(message.value.toString());
-        
-        // Si el evento viene de Orders, debería traer los items con su ID
-        for (const item of event.items) {
-          if (item.id) {
-            await this.decreaseStock.execute(item.id, 1);
+
+        try {
+          const rawPayload = JSON.parse(message.value.toString());
+          const event = OrderCreatedEventSchema.parse(rawPayload);
+          
+          console.log(`[Catalog] 📦 Processing stock reservation for order: ${event.orderId}`);
+
+          for (const item of event.items) {
+             await this.decreaseStock.execute(item.id, 1);
           }
+        } catch (error) {
+          console.error('[Catalog] ❌ Invalid order-created event:', error);
         }
       }
     });

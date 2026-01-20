@@ -1,8 +1,9 @@
+import { OrderStatus } from '@retrovault/shared';
 import { OrderRepository } from '../domain/order.repository.js';
 
 export interface UpdateOrderStatusInput {
   orderId: string;
-  status: 'PAID' | 'CANCELLED';
+  status: OrderStatus;
 }
 
 export class UpdateOrderStatusUseCase {

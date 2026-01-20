@@ -1,6 +1,7 @@
 import { kafka } from './kafka.client.js';
 import { ProcessPaymentUseCase } from '../application/process-payment.usecase.js';
 import { Transaction } from '../domain/transaction.entity.js';
+import { OrderCreatedEventSchema } from '@retrovault/shared'; 
 
 export class OrderCreatedConsumer {
   constructor(private readonly processPaymentUseCase: ProcessPaymentUseCase, 
@@ -25,19 +26,24 @@ export class OrderCreatedConsumer {
       eachMessage: async ({ message }) => {
         if (!message.value) return;
 
-        const event = JSON.parse(message.value.toString());
-        console.log(`[Payment] 📩 Event received: order-created for ID: ${event.orderId}`);
+        try {
+          const rawPayload = JSON.parse(message.value.toString());
+          const event = OrderCreatedEventSchema.parse(rawPayload);
+          console.log(`[Payment] ✅ Event validated: order-created for ID: ${event.orderId}`);
+          
+          const transaction = await this.processPaymentUseCase.execute({
+            orderId: event.orderId,
+            amount: event.total,
+            paymentMethodId: event.paymentMethodId
+          });
 
-        // Ejecutamos la lógica de pago que definimos antes
-        const transaction = await this.processPaymentUseCase.execute({
-          orderId: event.orderId,
-          amount: event.total,
-          paymentMethodId: event.paymentMethodId
-        });
+          const productIds = event.items.map(item => item.id);
+          
+          await this.onPaymentProcessed(transaction, productIds);
 
-        // Llamamos al callback para publicar el evento de pago procesado
-        const productIds = event.items.map((item: any) => item.id || item);
-        await this.onPaymentProcessed(transaction, productIds);
+        } catch (error) {
+          console.error(`[Payment] ❌ Invalid event format received:`, error);
+        }
       },
     });
   }

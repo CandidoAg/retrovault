@@ -1,4 +1,5 @@
 export type ItemStatus = 'MINT' | 'NEAR_MINT' | 'EXCELLENT' | 'GOOD' | 'FAIR';
+export type OrderStatus = "PENDING" | "PAID" | "CANCELLED";
 
 export interface RetroProduct {
   id: string;
@@ -23,3 +24,7 @@ export interface ProductCreatedEvent {
   price: number;
   stock: number;
 }
+
+export * from './events/order-created.schema.js';
+export * from './events/payment-failed.schema.js';
+export * from './events/payment-completed.schema.js';
