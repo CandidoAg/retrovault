@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "type": "module",
     "private": true,
+    "scripts": {
+        "dev": "tsx watch src/test-catalog.ts"
+    },
     "dependencies": {
         "@prisma/client": "^6.19.2",
         "@retrovault/shared": "workspace:*",

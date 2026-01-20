@@ -28,3 +28,6 @@ build/
 .idea/
 .DS_Store
 Thumbs.db
+
+# --- Turborepo ---
+.turbo/

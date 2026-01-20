@@ -29,9 +29,13 @@ services:
     env_file: ./services/catalog/.env
     ports:
       - "${CATALOG_DB_PORT}:5432" # Puerto 5433 para Catálogo
-
   orders-db:
     image: postgres:15
     env_file: ./services/orders/.env
     ports:
-      - "${ORDERS_DB_PORT}:5432" # Puerto 5434 para Pedidos
+      - "${ORDERS_DB_PORT}:5432" # Puerto 5434 para Pedidos      
+  payment-db:
+    image: postgres:15
+    env_file: ./services/payment/.env
+    ports:
+      - "${PAYMENT_DB_PORT}:5432" # Puerto 5435 para Payment

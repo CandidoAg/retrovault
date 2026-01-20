@@ -5,7 +5,8 @@ export class Order {
   constructor(
     public readonly id: string,
     public readonly customerId: string,
-    public readonly items: RetroProduct[]
+    public readonly items: RetroProduct[],
+    public readonly status: string = 'PENDING'
   ) {
     this.createdAt = new Date();
   }

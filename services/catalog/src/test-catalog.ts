@@ -4,6 +4,9 @@ import { PrismaProductRepository } from './infrastructure/prisma-product.reposit
 import { ProductCreatedPublisher } from './infrastructure/product-created.publisher.js';
 import { DecreaseStockUseCase } from './application/decrease-stock.usecase.js';
 import { OrderCreatedConsumer } from './infrastructure/order-created.consumer.js';
+import { CompensateStockUseCase } from './application/compensate-stock.usecase.js';
+import { PaymentFailedConsumer } from './infrastructure/payment-failed.consumer.js';
+import { kafka } from './infrastructure/kafka.client.js';
 
 async function run() {
   // 1. Inicializar Infraestructura (usarán el cliente centralizado internamente)
@@ -12,15 +15,18 @@ async function run() {
 
   // 2. Inicializar Casos de Uso y Consumidores
   const decreaseStockUseCase = new DecreaseStockUseCase(productRepo, productPublisher);
+  const compensateUseCase = new CompensateStockUseCase(productRepo, productPublisher);
   const orderConsumer = new OrderCreatedConsumer(decreaseStockUseCase);
+  const paymentFailedConsumer = new PaymentFailedConsumer(kafka, compensateUseCase);
   
   console.log('🚀 [Catalog Service] Online. Escuchando eventos de compra...');
   await orderConsumer.run();
+  await paymentFailedConsumer.run();
 
   // 3. Preparar productos de prueba
   const productsToSync = [
     { name: "The Legend of Zelda", price: 59.99, stock: 10, year: 1986 },
-    { name: "Super Mario Bros", price: 39.99, stock: 5, year: 1985 }
+    { name: "Super Mario Bros", price: 39.50, stock: 5, year: 1985 }
   ];
 
   console.log('\n📦 [Catalog] Sincronizando productos...');

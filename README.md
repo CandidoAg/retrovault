@@ -1,12 +1,21 @@
 # 🕹️ RetroVault: Arquitectura de Microservicios
-Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con Arquitectura Hexagonal, DDD (Domain-Driven Design) y comunicación asíncrona mediante Kafka.
+Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con **Arquitectura Hexagonal**, **DDD (Domain-Driven Design)** y comunicación asíncrona mediante **Kafka** aplicando el patrón **Saga**.
 
 ## 🛠️ Tecnologías Principales
-- **Lenguaje**: TypeScript
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka)
+![Turborepo](https://img.shields.io/badge/turborepo-000000?style=for-the-badge&logo=turborepo&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+- **Lenguaje**: TypeScript 
 - **Runtime**: Node.js (tsx para ejecución directa)
 - **Base de Datos**: PostgreSQL (Instancias independientes por servicio)
 - **ORM**: Prisma
 - **Mensajería**: Apache Kafka (KafkaJS)
+- **Gestor de Monorepo**: Turborepo (Orquestación de tareas y caché persistente).
 - **Gestor de Paquetes**: pnpm
 - **Infraestructura**: Docker & Docker Compose
 
@@ -36,6 +45,18 @@ DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${ORDERS_DB_IP}
 KAFKA_BROKERS="localhost:9092"
 ```
 
+### `services/payment/.env`
+```env
+POSTGRES_USER=admin_payment
+POSTGRES_PASSWORD=payment_pass_123
+POSTGRES_DB=payment_db
+PAYMENT_DB_PORT=5435
+PAYMENT_DB_IP=localhost
+
+DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${PAYMENT_DB_IP}:${PAYMENT_DB_PORT}/${POSTGRES_DB}"
+KAFKA_BROKERS="localhost:9092"
+```
+
 ## 🏗️ Guía de Instalación y Uso
 0. Preparación de variables de entorno
 Antes de nada, debes crear los archivos reales a partir de las plantillas. Esto es necesario para que Docker y Prisma sepan cómo conectarse a las bases de datos:
@@ -43,6 +64,7 @@ Antes de nada, debes crear los archivos reales a partir de las plantillas. Esto 
     # Desde la raíz del proyecto:
     cp services/catalog/.env.example services/catalog/.env
     cp services/orders/.env.example services/orders/.env
+    cp services/payment/.env.example services/payment/.env
     ```
 1. Levantar Infraestructura (Docker)
 Desde la raíz del proyecto, inicia los servicios de base de datos y mensajería:
@@ -60,26 +82,23 @@ Sincroniza los esquemas para generar las tablas y los clientes de Prisma en todo
     pnpm db:push
     ```
 ## 🧪 Ejecución de Tests de Integración
-Para validar la comunicación bidireccional y la sincronización de stock, abre dos terminales:
-**Terminal A (Catalog Service):**
+Para validar la comunicación bidireccional y la sincronización de stock, abre un terminal desde el root del proyecto:
 ```bash
-cd services/catalog
-pnpm exec tsx src/test-catalog.ts
-```
-
-***Terminal B (Orders Service):***
-```bash
-cd services/orders
-pnpm exec tsx src/test-orders.ts
+pnpm dev
 ```
 > 💡 **Tip de sincronización:** El test de Orders espera automáticamente 10 segundos. Esto garantiza que Kafka haya entregado los productos de Catalog a la base de datos de Orders antes de intentar comprar.
 
 ## 🔄 Flujo de Comunicación
-* Catalog publica productos con UUID (string) al arrancar.
-* Orders consume los eventos y actualiza su base de datos local (upsert).
-* Orders simula una compra y publica el evento order-events.
-* Catalog consume la orden, descuenta el stock y publica el producto actualizado.
-* Orders recibe la actualización y sincroniza su stock local automáticamente.
+1. **Catalog** publica productos al arrancar.
+2. **Orders** sincroniza su base de datos local (Vista Materializada).
+3. **Orders** publica order-created tras una compra.
+4. **Catalog** consume la orden y realiza una Reserva de Stock (Stock -1).
+5. **Payment** procesa el pago:
+    - **Si el precio termina en .99**: Publica payment-failed.
+    - **Resto de casos**: Publica payment-completed.
+6. Compensación (en caso de fallo):
+    - **Catalog** suma +1 al stock y publica la actualización.
+    - **Orders** marca la orden como CANCELLED.
 
 ## 🗺️ Roadmap del Proyecto
 
@@ -92,9 +111,10 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 - **Persistencia Independiente:** Bases de datos PostgreSQL dedicadas por servicio con Prisma ORM.
 - **Orquestación con Docker:** Entorno de desarrollo unificado con Docker Compose.
 
-### 🏗️ Fase 1: Transacciones Distribuidas (En Proceso)
-- [ ] **Payment Service:** Nuevo microservicio para el procesamiento financiero.
-- [ ] **Patrón Saga (Coreografía):** Implementación de lógica de compensación. Si el pago falla, se dispara un evento para que `Catalog` restaure el stock y `Orders` marque la orden como fallida automáticamente.
+### ✅ Fase 1: Transacciones Distribuidas (Completado)
+- **Payment Service:** Procesamiento financiero independiente.
+- **Patrón Saga (Coreografía):** Lógica de compensación automática funcional.
+- **Consistencia Eventual**: Sincronización de stock tras fallos verificada.
 
 ### 🛡️ Fase 2: Contratos de Datos y Validación
 - [ ] **Shared Schemas (Zod):** Centralización de contratos de eventos en `packages/shared`.

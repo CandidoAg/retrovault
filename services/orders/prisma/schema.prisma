@@ -19,5 +19,6 @@ model Order {
   id         String   @id // Ya era String (UUID)
   customerId String
   total      Float
+  status     String   @default("PENDING")
   createdAt  DateTime @default(now())
 }

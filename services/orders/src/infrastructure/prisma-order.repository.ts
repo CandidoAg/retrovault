@@ -11,6 +11,7 @@ export class PrismaOrderRepository implements OrderRepository {
         id: order.id,
         customerId: order.customerId,
         total: order.total,
+        status: order.status,
         createdAt: order.createdAt
       }
     });
@@ -18,11 +19,18 @@ export class PrismaOrderRepository implements OrderRepository {
 
   async findById(id: string): Promise<Order | null> {
     const res = await this.prisma.order.findUnique({ where: { id } });
-    return res ? new Order(res.id, res.customerId, []) : null;
+    return res ? new Order(res.id, res.customerId, [], res.status) : null;
   }
 
   async findAll(): Promise<Order[]> {
     const res = await this.prisma.order.findMany();
     return res.map(o => new Order(o.id, o.customerId, []));
+  }
+
+  async updateStatus(id: string, status: string): Promise<void> {
+    await this.prisma.order.update({
+      where: { id },
+      data: { status }
+    });
   }
 }

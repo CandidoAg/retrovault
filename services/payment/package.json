@@ -1,10 +1,10 @@
 {
-    "name": "@retrovault/orders",
+    "name": "@retrovault/payment",
     "version": "1.0.0",
     "type": "module",
     "private": true,
     "scripts": {
-        "dev": "tsx watch src/test-orders.ts"
+        "dev": "tsx watch src/test-payment.ts"
     },
     "dependencies": {
         "@prisma/client": "^6.19.2",

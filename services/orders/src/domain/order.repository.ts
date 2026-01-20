@@ -3,4 +3,5 @@ export interface OrderRepository {
   save(order: Order): Promise<void>;
   findById(id: string): Promise<Order | null>;
   findAll(): Promise<Order[]>;
+  updateStatus(id: string, status: string): Promise<void>;
 }

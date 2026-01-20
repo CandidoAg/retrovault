@@ -1,15 +1,16 @@
 {
   "name": "retrovault",
   "version": "1.0.0",
+  "packageManager": "pnpm@9.0.0",
   "type": "module",
   "private": true,
   "description": "Retro tech e-commerce - Monorepo",
   "scripts": {
     "test": "pnpm -r exec vitest",
-    "dev": "pnpm -r run dev",
-    "docker:up": "docker compose --env-file ./services/catalog/.env --env-file ./services/orders/.env up -d",
+    "dev": "turbo dev",
+    "docker:up": "docker compose --env-file ./services/catalog/.env --env-file ./services/orders/.env --env-file ./services/payment/.env up -d ",
     "docker:down": "docker compose down -v",
-    "db:push": "pnpm --filter catalog exec prisma db push && pnpm --filter orders exec prisma db push && pnpm --filter catalog exec prisma generate && pnpm --filter orders exec prisma generate"
+    "db:push": "pnpm --filter catalog exec prisma db push && pnpm --filter orders exec prisma db push && pnpm --filter payment exec prisma db push && pnpm --filter catalog exec prisma generate && pnpm --filter orders exec prisma generate && pnpm --filter payment exec prisma generate"
   },
   "devDependencies": {
     "@types/node": "^25.0.9",
@@ -17,6 +18,7 @@
     "prettier": "^3.7.4",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
+    "turbo": "^2.7.5",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   }
