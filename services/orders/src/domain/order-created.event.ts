@@ -6,4 +6,5 @@ export interface OrderCreatedEvent {
   total: number;
   items: RetroProduct[];
   createdAt: Date;
+  paymentMethodId: string;
 }

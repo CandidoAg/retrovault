@@ -8,7 +8,7 @@ import { PaymentProcessedConsumer } from './infrastructure/payment-processed.con
 import { kafka } from './infrastructure/kafka.client.js'; // Importamos tu cliente limpio
 import { CatalogProduct } from './domain/catalog-product.entity.js';
 
-async function doTransaction(transtionNumber: number, product: CatalogProduct | undefined, createOrderUseCase: CreateOrderUseCase) {
+async function doTransaction(transtionNumber: number, product: CatalogProduct | undefined, createOrderUseCase: CreateOrderUseCase, customerName: string) {
   if (!product) {
     console.error("❌ Error: Producto no sincronizado en Orders DB todavía.");
     return;
@@ -17,7 +17,7 @@ async function doTransaction(transtionNumber: number, product: CatalogProduct | 
   console.log(`🎯 Comprando ${product.name} (UUID: ${product.id})...`);
 
   // Ejecución de la compra
-  const order = await createOrderUseCase.execute("customer-pro-1", [product.id]);
+  const order = await createOrderUseCase.execute("customer-pro-1", [product.id], customerName);
   
   console.log(`
   ✅ [PEDIDO ${transtionNumber} COMPLETADO]
@@ -52,8 +52,8 @@ async function run() {
       const zelda = allProducts.find(p => p.name === "The Legend of Zelda");
       const mario = allProducts.find(p => p.name === "Super Mario Bros");
 
-      await doTransaction(1, zelda, createOrderUseCase);
-      await doTransaction(2, mario, createOrderUseCase);
+      await doTransaction(1, zelda, createOrderUseCase, "Zelda");
+      await doTransaction(2, mario, createOrderUseCase, "Mario");
       
     } catch (error: any) {
       console.error(`❌ Error en la simulación: ${error.message}`);

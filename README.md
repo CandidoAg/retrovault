@@ -10,6 +10,7 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 ![Turborepo](https://img.shields.io/badge/turborepo-000000?style=for-the-badge&logo=turborepo&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
 - **Lenguaje**: TypeScript 
 - **Runtime**: Node.js (tsx para ejecución directa)
 - **Base de Datos**: PostgreSQL (Instancias independientes por servicio)
@@ -18,6 +19,7 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 - **Gestor de Monorepo**: Turborepo (Orquestación de tareas y caché persistente).
 - **Gestor de Paquetes**: pnpm
 - **Infraestructura**: Docker & Docker Compose
+- **Pasarela de Pagos**: Stripe API (SDK oficial) para procesamiento de transacciones y simulación de estados financieros.
 
 ## ⚙️ Configuración de Variables de Entorno (.env)
 > **AVISO DE SEGURIDAD:** Las siguientes configuraciones están diseñadas exclusivamente para **entornos de desarrollo local**. Para despliegues en **producción**, es imperativo sustituir las credenciales por contraseñas robustas y cambiar localhost por la dirección IP o el Host correspondiente a su infraestructura de base de datos.
@@ -88,17 +90,17 @@ pnpm dev
 ```
 > 💡 **Tip de sincronización:** El test de Orders espera automáticamente 10 segundos. Esto garantiza que Kafka haya entregado los productos de Catalog a la base de datos de Orders antes de intentar comprar.
 
-## 🔄 Flujo de Comunicación
+## 🔄 Flujo de la Saga (Coreografía)
 1. **Catalog** publica productos al arrancar.
 2. **Orders** sincroniza su base de datos local (Vista Materializada).
-3. **Orders** publica order-created tras una compra.
+3. **Orders** publica ``order-created`` con un ``paymentMethodId`` dinámico (Success/Fail).
 4. **Catalog** consume la orden y realiza una Reserva de Stock (Stock -1).
-5. **Payment** procesa el pago:
-    - **Si el precio termina en .99**: Publica payment-failed.
-    - **Resto de casos**: Publica payment-completed.
-6. Compensación (en caso de fallo):
-    - **Catalog** suma +1 al stock y publica la actualización.
-    - **Orders** marca la orden como CANCELLED.
+5. **Payment (Stripe SDK)** procesa el pago real:
+    - **Si el token es de éxito:** Publica ``payment-completed``.
+    - **Si el token es de error (fondos insuficientes):** Publica ``payment-failed``.
+6. **Compensación (Saga)**:
+    - **Catalog** detecta el fallo, suma +1 al stock y publica la actualización.
+    - **Orders** marca la orden como ``CANCELLED``.
 
 ## 🗺️ Roadmap del Proyecto
 
@@ -113,8 +115,9 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 
 ### ✅ Fase 1: Transacciones Distribuidas (Completado)
 - **Payment Service:** Procesamiento financiero independiente.
-- **Patrón Saga (Coreografía):** Lógica de compensación automática funcional.
-- **Consistencia Eventual**: Sincronización de stock tras fallos verificada.
+- **Stripe Integration:** Uso de tokens de prueba para simular escenarios bancarios reales.
+- **Patrón Saga (Coreografía):** Lógica de compensación automática funcional ante errores de terceros.
+- **Consistencia Eventual**: Sincronización de stock tras fallos verificada en tiempo real.
 
 ### 🛡️ Fase 2: Contratos de Datos y Validación
 - [ ] **Shared Schemas (Zod):** Centralización de contratos de eventos en `packages/shared`.

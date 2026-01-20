@@ -31,7 +31,8 @@ export class OrderCreatedConsumer {
         // Ejecutamos la lógica de pago que definimos antes
         const transaction = await this.processPaymentUseCase.execute({
           orderId: event.orderId,
-          amount: event.total
+          amount: event.total,
+          paymentMethodId: event.paymentMethodId
         });
 
         // Llamamos al callback para publicar el evento de pago procesado
