@@ -57,6 +57,7 @@ PAYMENT_DB_IP=localhost
 
 DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${PAYMENT_DB_IP}:${PAYMENT_DB_PORT}/${POSTGRES_DB}"
 KAFKA_BROKERS="localhost:9092"
+STRIPE_SECRET_KEY=sk_test_... # Tu clave secreta de Stripe (Test Mode)
 ```
 
 ## 🏗️ Guía de Instalación y Uso
@@ -83,6 +84,9 @@ Sincroniza los esquemas para generar las tablas y los clientes de Prisma en todo
     ```bash
     pnpm db:push
     ```
+4. **Configuración de Stripe**:
+   Es necesario obtener una `STRIPE_SECRET_KEY` desde el Dashboard de Stripe (Developers > API Keys) y añadirla al archivo `.env` del servicio de **Payment**.
+   
 ## 🧪 Ejecución de Tests de Integración
 Para validar la comunicación bidireccional y la sincronización de stock, abre un terminal desde el root del proyecto:
 ```bash
