@@ -7,6 +7,7 @@
   "description": "Retro tech e-commerce - Monorepo",
   "scripts": {
     "test": "turbo run test --concurrency=1",
+    "test:cov": "pnpm -r run test --coverage",
     "dev": "turbo dev",
     "docker:up": "docker compose --env-file ./services/catalog/.env --env-file ./services/orders/.env --env-file ./services/payment/.env up -d ",
     "docker:down": "docker compose down -v",

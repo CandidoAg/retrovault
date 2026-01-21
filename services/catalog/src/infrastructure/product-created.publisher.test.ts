@@ -8,19 +8,14 @@ describe('ProductCreatedPublisher con TestHarness', () => {
   let publisher: any;
   let kafkaInstance: any;
 
-  beforeAll(async () => {
+beforeAll(async () => {
     const setup = await TestHarness.setupKafka();
     kafkaContainer = setup.container;
+    kafkaInstance = setup.kafka;
 
-    TestHarness.fillEmptyEnv('catalog');
-
-    const { kafka } = await import('./kafka.client.js');
     const { ProductCreatedPublisher } = await import('./product-created.publisher.js');
-    
-    kafkaInstance = kafka;
     publisher = new ProductCreatedPublisher();
-    
-    // 4. Inyectamos el productor conectado
+
     const producer = kafkaInstance.producer();
     await producer.connect();
     (publisher as any).producer = producer;

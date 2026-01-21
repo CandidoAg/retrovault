@@ -1,7 +1,7 @@
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { KafkaContainer } from "@testcontainers/kafka";
 import { execSync } from 'child_process';
-import { Kafka } from "kafkajs";
+import { Kafka, logLevel } from "kafkajs";
 
 export type ServiceName = 'catalog' | 'orders' | 'payment';
 
@@ -48,6 +48,12 @@ export class TestHarness {
   static async setupKafka() {
     const container = await new KafkaContainer("confluentinc/cp-kafka:7.5.0")
       .withExposedPorts(9093)
+      .withEnvironment({
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1",
+        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1",
+        KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1",
+        KAFKA_MIN_INSYNC_REPLICAS: "1"
+      })
       .start();
 
     const host = container.getHost();
@@ -58,7 +64,8 @@ export class TestHarness {
 
     const kafka = new Kafka({
       clientId: 'test-harness-client',
-      brokers: [bootstrapServers]
+      brokers: [bootstrapServers],
+      logLevel: logLevel.NOTHING
     });
 
     return { container, bootstrapServers, kafka };

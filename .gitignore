@@ -1,33 +1,36 @@
-# Dependencies
+# --- Dependencies & Logs ---
 node_modules/
 .pnpm-debug.log
 
-# Environment variables (Security)
-# We ignore the real .env files but NOT the .env.example files
+# --- Environment variables (Security) ---
 .env
 .env.local
 .env.test
+.env.*.local
 
-# Prisma generated client
-# This is generated on each machine via pnpm exec prisma generate
-/services/**/src/infrastructure/generated/
-
-# Local databases and logs
+# --- Prisma & Infrastructure ---
+# Ignora los clientes generados en cualquier nivel de servicios
+**/src/infrastructure/generated/
+# Si usas bases de datos locales por archivo
 *.db
 *.db-journal
-logs/
-*.log
 
-# Compilation and cache
+# --- Coverage Reports ---
+# Fundamental para que no subas los HTML/JSON pesados del coverage al repo
+**/coverage/
+
+# --- Compilation & Cache ---
 dist/
 build/
 .tsx/
+.turbo/
 
-# IDEs and System files
+# --- IDEs and System files ---
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 
-# --- Turborepo ---
-.turbo/
+# --- Vitest / Testing ---
+# Vitest a veces genera archivos temporales de inspección
+.vitest-result.json

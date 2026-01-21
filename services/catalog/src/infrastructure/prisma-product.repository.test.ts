@@ -11,34 +11,15 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('PrismaProductRepository con Testcontainers', () => {
-  let container: StartedPostgreSqlContainer;
   let prisma: PrismaClient;
   let repository: PrismaProductRepository;
 
-  beforeAll(async () => {
-    // 1. Localizamos el schema de forma infalible
-    const schemaPath = path.resolve(__dirname, '../../prisma/schema.prisma');
-    
-    // 2. Usamos el Harness
-    const setup = await TestHarness.setupPrisma({
-      databaseName: 'catalog_db',
-      schemaPath,
-      PrismaClient,
-      PrismaRepository: PrismaProductRepository
-    });
-    
-    container = setup.container;
-    prisma = setup.prisma;
-    repository = setup.repository;
-  }, 60000);
-
   beforeEach(async () => {
-    await prisma.product.deleteMany();
-  });
+    prisma = new PrismaClient();
+    repository = new PrismaProductRepository();
+    (repository as any).prisma = prisma; // Inyectamos el cliente
 
-  afterAll(async () => {
-    if (prisma) await prisma.$disconnect();
-    if (container) await container.stop();
+    await prisma.product.deleteMany();
   });
 
   it('debería guardar un producto y recuperarlo por ID', async () => {

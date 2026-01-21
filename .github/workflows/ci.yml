@@ -1,55 +1,46 @@
-name: CI - Microservices Pipeline
+name: CI - Microservices Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
 
 jobs:
   test:
-    name: Test ${{ matrix.service }}
     runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        # Aquí definimos los servicios que queremos ejecutar en paralelo
-        service: [catalog, orders, payment]
 
-    services:
-      # Aunque Testcontainers levanta sus propios contenedores, 
-      # a veces es útil tener los servicios base listos o dejar que Testcontainers gestione todo.
-      # Nota: Testcontainers requiere acceso al socket de docker, que ya viene en ubuntu-latest.
+    strategy:
+      # Matrix permite ejecutar cada servicio en un contenedor independiente en paralelo
+      matrix:
+        service: [catalog, orders, payment]
+      # Si un servicio falla, los otros continúan para ver el reporte completo
+      fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v3
         with:
           version: 9 # O la versión que estés usando
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          node-version: 20
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run Tests with Coverage
-        run: pnpm --filter @retrovault/${{ matrix.service }} test -- --coverage
+        run: pnpm --filter @retrovault/${{ matrix.service }} run test:cov
+
+      - name: Upload Coverage Report (Optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.service }}
+          path: services/${{ matrix.service }}/coverage/
