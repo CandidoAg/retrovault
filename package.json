@@ -6,16 +6,21 @@
   "private": true,
   "description": "Retro tech e-commerce - Monorepo",
   "scripts": {
-    "test": "pnpm -r exec vitest",
+    "test": "turbo run test --concurrency=1",
     "dev": "turbo dev",
     "docker:up": "docker compose --env-file ./services/catalog/.env --env-file ./services/orders/.env --env-file ./services/payment/.env up -d ",
     "docker:down": "docker compose down -v",
     "db:push": "pnpm --filter catalog exec prisma db push && pnpm --filter orders exec prisma db push && pnpm --filter payment exec prisma db push && pnpm --filter catalog exec prisma generate && pnpm --filter orders exec prisma generate && pnpm --filter payment exec prisma generate"
   },
   "devDependencies": {
+    "@testcontainers/kafka": "^11.11.0",
+    "@testcontainers/postgresql": "^11.11.0",
     "@types/node": "^25.0.9",
+    "@vitest/coverage-v8": "^4.0.17",
     "eslint": "^9.39.2",
+    "kafkajs": "^2.2.4",
     "prettier": "^3.7.4",
+    "testcontainers": "^11.11.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "turbo": "^2.7.5",

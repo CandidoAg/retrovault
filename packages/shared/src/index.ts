@@ -28,3 +28,5 @@ export interface ProductCreatedEvent {
 export * from './events/order-created.schema.js';
 export * from './events/payment-failed.schema.js';
 export * from './events/payment-completed.schema.js';
+
+export * from './test-utils.js';
