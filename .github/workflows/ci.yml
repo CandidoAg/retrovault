@@ -34,7 +34,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
-        run: pnpm --filter @retrovault/${{ matrix.service }} run prisma:generate --if-present
+        run: pnpm --filter @retrovault/${{ matrix.service }} run --if-present prisma:generate
 
       - name: Run Tests with Coverage
         run: pnpm --filter @retrovault/${{ matrix.service }} run test:cov
