@@ -6,12 +6,12 @@
   "private": true,
   "description": "Retro tech e-commerce - Monorepo",
   "scripts": {
-    "test": "turbo run test --concurrency=1",
-    "test:cov": "pnpm -r run test --coverage",
     "dev": "turbo dev",
-    "docker:up": "docker compose --env-file ./services/catalog/.env --env-file ./services/orders/.env --env-file ./services/payment/.env up -d ",
-    "docker:down": "docker compose down -v",
-    "db:push": "pnpm --filter catalog exec prisma db push && pnpm --filter orders exec prisma db push && pnpm --filter payment exec prisma db push && pnpm --filter catalog exec prisma generate && pnpm --filter orders exec prisma generate && pnpm --filter payment exec prisma generate"
+    "test": "turbo run test --concurrency=1",
+    "test:cov": "pnpm -r --workspace-concurrency=1 run test:cov",
+    "db:push": "pnpm -r --workspace-concurrency=1 run db:push",
+    "docker:up": "docker compose --env-file ./services/catalog/.env --env-file ./services/orders/.env --env-file ./services/payment/.env up -d",
+    "docker:down": "docker compose down -v"
   },
   "devDependencies": {
     "@testcontainers/kafka": "^11.11.0",
@@ -26,6 +26,16 @@
     "tsx": "^4.21.0",
     "turbo": "^2.7.5",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.17",
+    "prisma": "6.19.2" 
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "prisma": "6.19.2",
+      "@prisma/client": "6.19.2"
+    }
   }
 }

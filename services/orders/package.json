@@ -5,8 +5,10 @@
     "private": true,
     "scripts": {
         "dev": "tsx watch src/test-orders.ts",
-        "test": "pnpm prisma:generate && vitest run --passWithNoTests",
-        "test:cov": "pnpm prisma:generate && vitest run --coverage --passWithNoTests"
+        "prisma:generate": "prisma generate",
+        "db:push": "prisma db push && pnpm prisma:generate",
+        "test": "vitest run --passWithNoTests",
+        "test:cov": "vitest run --coverage --passWithNoTests"
     },
     "dependencies": {
         "@prisma/client": "^6.19.2",
