@@ -7,6 +7,7 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
 ![Zod](https://img.shields.io/badge/zod-%233068b7.svg?style=for-the-badge&logo=zod&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
 ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka)
 ![Turborepo](https://img.shields.io/badge/turborepo-000000?style=for-the-badge&logo=turborepo&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
@@ -17,11 +18,29 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 - **Base de Datos**: PostgreSQL (Instancias independientes por servicio)
 - **ORM**: Prisma
 - **Validación de Datos**: Zod (Validación estricta de variables de entorno y contratos de Kafka).
+- **Testing**: **Vitest** (Unit & Integration) + **Testcontainers** (Bases de datos efímeras).
 - **Mensajería**: Apache Kafka (KafkaJS)
 - **Gestor de Monorepo**: Turborepo (Orquestación de tareas y caché persistente).
 - **Gestor de Paquetes**: pnpm
 - **Infraestructura**: Docker & Docker Compose
 - **Pasarela de Pagos**: Stripe API (SDK oficial) para procesamiento de transacciones y simulación de estados financieros.
+
+## 🧪 Testing & Calidad (Fase 3)
+El microservicio de **Catalog** y **Orders** implementan una suite de tests robusta enfocada en la fiabilidad de la lógica de negocio y la persistencia:
+
+* **Tests de Integración**: Uso de **Testcontainers** para levantar una base de datos PostgreSQL real en cada suite de tests, garantizando que las queries de Prisma sean correctas.
+* **Mocks de Infraestructura**: Simulación controlada de Kafka para validar la publicación y consumo de eventos sin depender de un broker externo durante los tests unitarios.
+* **Cobertura de Código**: Configuración optimizada de Vitest para alcanzar un **>95% de cobertura** real en lógica de dominio y aplicación.
+* **CI/CD con GitHub Actions**: Pipeline automatizado que valida la instalación, generación de Prisma, ejecución de tests y compilación (build) de cada microservicio de forma independiente mediante una matriz de trabajos.
+
+**Ejecución de tests con pnpm:**
+```bash
+# Ejecutar tests de todos los servicios
+pnpm test
+
+# Ejecutar tests de todos los servicios con reporte de cobertura (v8)
+pnpm test:cov
+```
 
 ## ⚙️ Configuración de Variables de Entorno (.env)
 > **AVISO DE SEGURIDAD:** Las siguientes configuraciones están diseñadas exclusivamente para **entornos de desarrollo local**. Para despliegues en **producción**, es imperativo sustituir las credenciales por contraseñas robustas y cambiar localhost por la dirección IP o el Host correspondiente a su infraestructura de base de datos.
@@ -133,9 +152,10 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 - **Validación con Zod:** Implementada en la carga de configuración (.env) y en los esquemas de eventos de Kafka.
 - **Esquemas Compartidos:** Centralización de tipos en el paquete shared para consistencia entre servicios.
 
-### 🧪 Fase 3: Calidad y Automatización (CI/CD)
-- [ ] **Testing de Integración:** Uso de **Testcontainers** para pruebas reales con contenedores efímeros de Postgres y Kafka.
-- [ ] **GitHub Actions:** Pipeline automatizado para validar el build, los tests y la sincronización de DB en cada `push`.
+### 🧪 Fase 3: Calidad y Automatización (En Progreso)
+- [x] **Testing de Integración (Catalog & Orders):** Uso de **Testcontainers** para pruebas reales.
+- [x] **GitHub Actions (CI):** Pipeline activo con validación de Tests y Build por cada push.
+- [ ] **Testing de Integración (Payment):** Pendiente replicar la suite de Orders en los demás servicios.
 
 ### 💻 Fase 4: Seguridad y Frontend
 - [ ] **API Gateway:** Punto de entrada único con ruteo inteligente.

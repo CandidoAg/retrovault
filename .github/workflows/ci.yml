@@ -1,4 +1,4 @@
-name: CI - Microservices Tests
+name: CI - Microservices Pipeline
 
 on:
   push:
@@ -7,11 +7,12 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
+  test-and-build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
+        # Añadimos los nombres exactos de tus carpetas en services/
         service: [catalog, orders, payment]
       fail-fast: false
 
@@ -40,6 +41,10 @@ jobs:
         run: pnpm --filter @retrovault/${{ matrix.service }} run test:cov
         env:
           NODE_ENV: test
+
+      - name: Build Service
+        # Solo buildeamos si los tests pasaron
+        run: pnpm --filter @retrovault/${{ matrix.service }} run build
 
       - name: Upload Coverage Report
         if: always()
