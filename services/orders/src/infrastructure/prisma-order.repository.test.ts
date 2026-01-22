@@ -2,14 +2,19 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { PrismaOrderRepository } from './prisma-order.repository.js';
 import { Order } from '../domain/order.entity.js';
 import { PrismaClient } from './generated/client/index.js';
+import { a } from 'node_modules/vitest/dist/chunks/suite.d.BJWk38HB.js';
 
 describe('PrismaOrderRepository', () => {
-  const prisma = new PrismaClient();
-  const repository = new PrismaOrderRepository();
+  let prisma: PrismaClient;
+  let repository = new PrismaOrderRepository();
 
   beforeEach(async () => {
-    // Limpiamos la base de datos antes de cada test
-    await prisma.order.deleteMany();
+     prisma = new PrismaClient();
+     repository = new PrismaOrderRepository();
+     (repository as any).prisma = prisma; // Inyectamos el cliente
+    
+     await prisma.order.deleteMany();
+     await prisma.catalogProduct.deleteMany();
   });
 
   it('should save and find an order', async () => {

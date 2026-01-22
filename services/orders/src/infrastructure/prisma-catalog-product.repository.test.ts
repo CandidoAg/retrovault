@@ -4,11 +4,16 @@ import { CatalogProduct } from '../domain/catalog-product.entity.js';
 import { PrismaClient } from './generated/client/index.js';
 
 describe('PrismaCatalogProductRepository', () => {
-  const prisma = new PrismaClient();
-  const repository = new PrismaCatalogProductRepository();
+  let prisma = new PrismaClient();
+  let repository = new PrismaCatalogProductRepository();
 
   beforeEach(async () => {
-    await prisma.catalogProduct.deleteMany();
+     prisma = new PrismaClient();
+     repository = new PrismaCatalogProductRepository();
+     (repository as any).prisma = prisma; // Inyectamos el cliente
+    
+     await prisma.order.deleteMany();
+     await prisma.catalogProduct.deleteMany();
   });
 
   it('should save a product (create)', async () => {
