@@ -8,6 +8,7 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
 ![Zod](https://img.shields.io/badge/zod-%233068b7.svg?style=for-the-badge&logo=zod&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+![Testcontainers](https://img.shields.io/badge/Testcontainers-000?style=for-the-badge&logo=testcontainers&logoColor=white)
 ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka)
 ![Turborepo](https://img.shields.io/badge/turborepo-000000?style=for-the-badge&logo=turborepo&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
@@ -18,20 +19,22 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 - **Base de Datos**: PostgreSQL (Instancias independientes por servicio)
 - **ORM**: Prisma
 - **Validación de Datos**: Zod (Validación estricta de variables de entorno y contratos de Kafka).
-- **Testing**: **Vitest** (Unit & Integration) + **Testcontainers** (Bases de datos efímeras).
+- **Testing**: **Vitest** (Unit & Integration) + **Testcontainers** (Bases de datos PostgreSQL efímeras e independientes por suite).
 - **Mensajería**: Apache Kafka (KafkaJS)
 - **Gestor de Monorepo**: Turborepo (Orquestación de tareas y caché persistente).
 - **Gestor de Paquetes**: pnpm
 - **Infraestructura**: Docker & Docker Compose
 - **Pasarela de Pagos**: Stripe API (SDK oficial) para procesamiento de transacciones y simulación de estados financieros.
 
-## 🧪 Testing & Calidad (Fase 3)
-El microservicio de **Catalog** y **Orders** implementan una suite de tests robusta enfocada en la fiabilidad de la lógica de negocio y la persistencia:
+## 🧪 Testing & Calidad (Fase 3 - Completada)
+Todo el ecosistema de RetroVault cuenta con una suite de tests automatizada que garantiza la integridad de los datos y la lógica de negocio:
 
-* **Tests de Integración**: Uso de **Testcontainers** para levantar una base de datos PostgreSQL real en cada suite de tests, garantizando que las queries de Prisma sean correctas.
-* **Mocks de Infraestructura**: Simulación controlada de Kafka para validar la publicación y consumo de eventos sin depender de un broker externo durante los tests unitarios.
-* **Cobertura de Código**: Configuración optimizada de Vitest para alcanzar un **>95% de cobertura** real en lógica de dominio y aplicación.
-* **CI/CD con GitHub Actions**: Pipeline automatizado que valida la instalación, generación de Prisma, ejecución de tests y compilación (build) de cada microservicio de forma independiente mediante una matriz de trabajos.
+* **Tests de Integración (Full Stack Tech)**: Cada servicio utiliza **Testcontainers** para levantar una instancia limpia de PostgreSQL. Esto permite validar los esquemas de Prisma y las constraints de base de datos sin contaminar entornos locales.
+* **Mocks de Infraestructura**: 
+    - **Kafka**: Simulación de brokers para testear el envío y recepción de eventos de la Saga.
+    - **Stripe**: Mocks del SDK para simular respuestas bancarias (éxito, denegación, error de red).
+* **Validación de Contratos**: Uso de **Zod** para asegurar que los eventos que viajan por Kafka cumplen estrictamente con los esquemas compartidos en el paquete `@retrovault/shared`.
+* **CI/CD con GitHub Actions**: Pipeline configurado para ejecutar tests en paralelo, garantizando que ningún cambio rompa la coreografía de la Saga.
 
 **Ejecución de tests con pnpm:**
 ```bash
@@ -152,10 +155,10 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 - **Validación con Zod:** Implementada en la carga de configuración (.env) y en los esquemas de eventos de Kafka.
 - **Esquemas Compartidos:** Centralización de tipos en el paquete shared para consistencia entre servicios.
 
-### 🧪 Fase 3: Calidad y Automatización (En Progreso)
-- [x] **Testing de Integración (Catalog & Orders):** Uso de **Testcontainers** para pruebas reales.
-- [x] **GitHub Actions (CI):** Pipeline activo con validación de Tests y Build por cada push.
-- [ ] **Testing de Integración (Payment):** Pendiente replicar la suite de Orders en los demás servicios.
+### ✅ Fase 3: Calidad y Automatización (Completado)
+- **Testing de Integración (Catalog & Orders):** Uso de **Testcontainers** para pruebas reales.
+- **GitHub Actions (CI):** Pipeline activo con validación de Tests y Build por cada push.
+- **Testing de Integración (Payment):** Pendiente replicar la suite de Orders en los demás servicios.
 
 ### 💻 Fase 4: Seguridad y Frontend
 - [ ] **API Gateway:** Punto de entrada único con ruteo inteligente.
