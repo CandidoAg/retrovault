@@ -4,6 +4,7 @@
     "type": "module",
     "private": true,
     "scripts": {
+        "build": "tsc",
         "dev": "tsx watch src/test-catalog.ts",
         "prisma:generate": "prisma generate",
         "db:push": "prisma db push && pnpm prisma:generate",

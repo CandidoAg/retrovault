@@ -6,6 +6,7 @@
   "private": true,
   "description": "Retro tech e-commerce - Monorepo",
   "scripts": {
+    "build": "turbo run build",
     "dev": "turbo dev",
     "test": "turbo run test --concurrency=1",
     "test:cov": "pnpm -r --workspace-concurrency=1 run test:cov",
