@@ -19,7 +19,7 @@
     "@testcontainers/postgresql": "^11.11.0",
     "@types/node": "^25.0.9",
     "@types/uuid": "^11.0.0",
-    "@vitest/coverage-v8": "^4.0.17",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^9.39.2",
     "kafkajs": "^2.2.4",
     "prettier": "^3.7.4",
@@ -29,7 +29,7 @@
     "tsx": "^4.21.0",
     "turbo": "^2.7.5",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",
