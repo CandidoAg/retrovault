@@ -2,9 +2,6 @@ import Stripe from 'stripe';
 import { Transaction, TransactionStatus } from '../domain/transaction.entity.js';
 import { TransactionRepository } from '../domain/transaction.repository.js';
 
-// Inicializamos Stripe (asegúrate de tener STRIPE_SECRET_KEY en tu .env)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export interface ProcessPaymentInput {
   orderId: string;
   amount: number;
@@ -12,7 +9,14 @@ export interface ProcessPaymentInput {
 }
 
 export class ProcessPaymentUseCase {
-  constructor(private readonly transactionRepository: TransactionRepository) {}
+  private stripe: Stripe;
+
+  constructor(private readonly transactionRepository: TransactionRepository) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY no definida en el entorno');
+    }
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  }
 
   async execute(input: ProcessPaymentInput): Promise<Transaction> {
     console.log(`[PaymentUseCase] 🆕 Registering payment attempt for order ${input.orderId} via Stripe...`);
@@ -26,7 +30,7 @@ export class ProcessPaymentUseCase {
     try {
       // 2. LÓGICA DE NEGOCIO REAL CON STRIPE
       // Nota: Stripe usa céntimos, multiplicamos por 100
-      const paymentIntent = await stripe.paymentIntents.create({
+      const paymentIntent = await this.stripe.paymentIntents.create({
         amount: Math.round(input.amount * 100),
         currency: 'usd',
         payment_method: input.paymentMethodId || 'pm_card_visa', // Tarjeta de éxito por defecto

@@ -1,6 +1,8 @@
 import { kafka } from './kafka.client.js';
 import { OrderCreatedEvent } from '../domain/order-created.event.js';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class OrderCreatedPublisher {
   private producer = kafka.producer();
 

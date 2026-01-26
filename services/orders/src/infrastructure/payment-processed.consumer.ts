@@ -1,7 +1,9 @@
 import { Kafka } from 'kafkajs';
 import { UpdateOrderStatusUseCase } from '../application/update-order-status.usecase.js';
 import { PaymentCompletedEventSchema, PaymentFailedEventSchema, OrderStatus } from '@retrovault/shared';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PaymentProcessedConsumer {
   private consumer;
 

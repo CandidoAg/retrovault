@@ -1,6 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { ProductRepository } from '../domain/product.repository.js';
 import { ProductCreatedPublisher } from '../infrastructure/product-created.publisher.js';
 
+@Injectable()
 export class DecreaseStockUseCase {
   constructor(
     private productRepo: ProductRepository,

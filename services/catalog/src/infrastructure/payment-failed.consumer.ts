@@ -1,7 +1,9 @@
 import { Kafka } from 'kafkajs';
 import { CompensateStockUseCase } from '../application/compensate-stock.usecase.js';
 import { PaymentFailedEventSchema } from '@retrovault/shared';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PaymentFailedConsumer {
   private consumer;
 

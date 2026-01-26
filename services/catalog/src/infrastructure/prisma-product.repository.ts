@@ -1,7 +1,9 @@
 import { PrismaClient } from './generated/client/index.js';
 import { Product } from '../domain/product.entity.js';
 import { ProductRepository } from '../domain/product.repository.js';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PrismaProductRepository implements ProductRepository {
   private prisma = new PrismaClient();
 

@@ -1,3 +1,12 @@
+# Archivos compilados de JS y mapas
+*.js
+*.js.map
+*.d.ts
+
+# Excepto los que sean código fuente real (si los tuvieras)
+!src/**
+# Información de build de TS
+*.tsbuildinfo
 # --- Dependencies & Logs ---
 node_modules/
 .pnpm-debug.log
@@ -11,6 +20,8 @@ node_modules/
 # --- Prisma & Infrastructure ---
 # Ignora los clientes generados en cualquier nivel de servicios
 **/src/infrastructure/generated/
+**/infrastructure/generated/client
+
 # Si usas bases de datos locales por archivo
 *.db
 *.db-journal

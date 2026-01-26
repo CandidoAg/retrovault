@@ -1,7 +1,9 @@
 import { kafka } from './kafka.client.js';
 import { DecreaseStockUseCase } from '../application/decrease-stock.usecase.js';
 import { OrderCreatedEventSchema } from '@retrovault/shared'; 
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class OrderCreatedConsumer {
   private consumer = kafka.consumer({ groupId: 'catalog-group' });
 

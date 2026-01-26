@@ -2,7 +2,9 @@ import { kafka } from './kafka.client.js';
 import { ProcessPaymentUseCase } from '../application/process-payment.usecase.js';
 import { Transaction } from '../domain/transaction.entity.js';
 import { OrderCreatedEventSchema } from '@retrovault/shared'; 
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class OrderCreatedConsumer {
   constructor(private readonly processPaymentUseCase: ProcessPaymentUseCase, 
               private readonly onPaymentProcessed: (transaction: Transaction, items: string[]) => Promise<void>) {}

@@ -4,17 +4,23 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 ## 🛠️ Tecnologías Principales
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs)
+![Fastify](https://img.shields.io/badge/fastify-%23000000.svg?style=for-the-badge&logo=fastify)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
 ![Zod](https://img.shields.io/badge/zod-%233068b7.svg?style=for-the-badge&logo=zod&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
-![Testcontainers](https://img.shields.io/badge/Testcontainers-000?style=for-the-badge&logo=testcontainers&logoColor=white)
+![Testcontainers](https://img.shields.io/badge/Testcontainers-000?style=for-the-badge&logo=testcontainers)
 ![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-000?style=for-the-badge&logo=apachekafka)
-![Turborepo](https://img.shields.io/badge/turborepo-000000?style=for-the-badge&logo=turborepo&logoColor=white)
+![Turborepo](https://img.shields.io/badge/turborepo-000000?style=for-the-badge&logo=turborepo)
 ![pnpm](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
 - **Lenguaje**: TypeScript 
+- **Framework**: NestJS (Microservicios)
+- **API Gateway**: Fastify con Proxy inverso.
+- **Seguridad**: Autenticación centralizada mediante JWT (JSON Web Tokens).
 - **Runtime**: Node.js (tsx para ejecución directa)
 - **Base de Datos**: PostgreSQL (Instancias independientes por servicio)
 - **ORM**: Prisma
@@ -84,6 +90,13 @@ KAFKA_BROKERS="localhost:9092"
 STRIPE_SECRET_KEY=sk_test_... # Tu clave secreta de Stripe (Test Mode)
 ```
 
+### `services/auth/.env` & `services/gateway/.env`
+```env
+JWT_SECRET=tu_clave_secreta_super_segura
+AUTH_PORT=3004
+GATEWAY_PORT=3000
+```
+
 ## 🛡️ Validación Estricta (Fail-Fast)
 El sistema utiliza **Zod** para garantizar que el entorno sea seguro antes de arrancar:
 - **Variables de Entorno:** El microservicio no inicia si faltan credenciales o el formato es inválido.
@@ -97,6 +110,8 @@ Antes de nada, debes crear los archivos reales a partir de las plantillas. Esto 
     cp services/catalog/.env.example services/catalog/.env
     cp services/orders/.env.example services/orders/.env
     cp services/payment/.env.example services/payment/.env
+    cp services/auth/.env.example services/auth/.env
+    cp services/gateway/.env.example services/gateway/.env
     ```
 1. Levantar Infraestructura (Docker)
 Desde la raíz del proyecto, inicia los servicios de base de datos y mensajería:
@@ -160,10 +175,11 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 - **GitHub Actions (CI):** Pipeline activo con validación de Tests y Build por cada push.
 - **Testing de Integración (Payment):** Pendiente replicar la suite de Orders en los demás servicios.
 
-### 💻 Fase 4: Seguridad y Frontend
-- [ ] **API Gateway:** Punto de entrada único con ruteo inteligente.
-- [ ] **Autenticación JWT:** Seguridad centralizada para proteger los recursos del sistema.
-- [ ] **Frontend (Next.js):** Interfaz de usuario profesional para la navegación y compra de productos.
+### 💻 Fase 4: Seguridad y Frontend Web (En Progreso)
+- [x] **API Gateway**: Punto de entrada único basado en Fastify con ruteo inteligente.
+- [x] **Autenticación JWT**: Seguridad centralizada que protege las rutas críticas.
+- [x] **Auth Service**: Microservicio dedicado a la gestión de identidad.
+- [ ] **Frontend (Next.js/React)**: Desarrollo de la plataforma e-commerce web para navegación y compra de productos.
 
 ### 📈 Fase 5: Resiliencia y Observabilidad (Enterprise)
 - [ ] **Observabilidad:** Tracing distribuido con OpenTelemetry para visualizar el viaje de cada orden.

@@ -39,3 +39,10 @@ services:
     env_file: ./services/payment/.env
     ports:
       - "${PAYMENT_DB_PORT}:5432" # Puerto 5435 para Payment
+      
+  auth-db:
+    image: postgres:15-alpine
+    env_file: ./services/auth/.env
+    ports:
+      - "${AUTH_DB_PORT}:5432" # Puerto 5436 para Auth
+    

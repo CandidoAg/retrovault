@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { ProductRepository } from '../domain/product.repository.js';
 import { ProductCreatedPublisher } from '../infrastructure/product-created.publisher.js';
 
@@ -5,6 +6,7 @@ export interface CompensateStockInput {
   items: { id: string, quantity: number }[];
 }
 
+@Injectable()
 export class CompensateStockUseCase {
   constructor(private readonly productRepository: ProductRepository, private readonly eventPublisher: ProductCreatedPublisher) {}
 

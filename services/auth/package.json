@@ -1,0 +1,41 @@
+{
+  "name": "@retrovault/auth",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch",
+    "prisma:generate": "prisma generate",
+    "db:push": "prisma db push && pnpm prisma:generate",
+    "test": "vitest run --passWithNoTests",
+    "test:cov": "vitest run --coverage --passWithNoTests",
+    "start:prod": "node dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.16",
+    "@retrovault/shared": "workspace:*",
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "prisma": "6.19.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  },
+  "dependencies": {
+    "@fastify/static": "^9.0.0",
+    "@fastify/view": "^11.1.1",
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/core": "^11.1.12",
+    "@nestjs/platform-fastify": "^11.1.12",
+    "@prisma/client": "6.19.2",
+    "bcrypt": "^6.0.0",
+    "fastify": "^5.7.2",
+    "jsonwebtoken": "^9.0.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  }
+}

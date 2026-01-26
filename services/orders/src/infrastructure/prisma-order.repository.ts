@@ -1,7 +1,9 @@
 import { PrismaClient } from './generated/client/index.js';
 import { Order } from '../domain/order.entity.js';
 import { OrderRepository } from '../domain/order.repository.js';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PrismaOrderRepository implements OrderRepository {
   private prisma = new PrismaClient();
 

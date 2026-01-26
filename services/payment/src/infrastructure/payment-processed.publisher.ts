@@ -1,7 +1,9 @@
 import { kafka } from './kafka.client.js';
 import { Transaction } from '../domain/transaction.entity.js';
 import { PaymentFailedEventSchema } from '@retrovault/shared';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PaymentProcessedPublisher {
   private producer = kafka.producer();
 

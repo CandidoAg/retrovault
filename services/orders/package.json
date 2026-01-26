@@ -4,24 +4,33 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "build": "tsc",
-        "dev": "tsx watch src/test-orders.ts",
+        "build": "nest build",
+        "dev": "nest start --watch",
         "prisma:generate": "prisma generate",
         "db:push": "prisma db push && pnpm prisma:generate",
         "test": "vitest run --passWithNoTests",
-        "test:cov": "vitest run --coverage --passWithNoTests"
+        "test:cov": "vitest run --coverage --passWithNoTests",
+        "start:prod": "node dist/main.js",
+        "start": "nest start --watch"
     },
     "dependencies": {
+        "@nestjs/common": "^11.1.12",
+        "@nestjs/core": "^11.1.12",
+        "@nestjs/platform-fastify": "^11.1.12",
         "@prisma/client": "^6.19.2",
         "kafkajs": "^2.2.4",
+        "reflect-metadata": "^0.2.2",
+        "rxjs": "^7.8.2",
         "uuid": "^13.0.0",
         "zod": "^4.3.5"
     },
     "devDependencies": {
+        "@nestjs/cli": "^11.0.16",
         "@retrovault/shared": "workspace:*",
         "@types/node": "^25.0.9",
         "@types/uuid": "^11.0.0",
         "prisma": "^6.19.2",
+        "typescript": "^5.9.3",
         "vitest": "^4.0.17"
     }
 }

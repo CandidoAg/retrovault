@@ -1,6 +1,8 @@
 import { kafka } from './kafka.client.js';
 import { Product } from '../domain/product.entity.js';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class ProductCreatedPublisher {
   // Usamos el productor de la instancia centralizada
   private producer = kafka.producer();

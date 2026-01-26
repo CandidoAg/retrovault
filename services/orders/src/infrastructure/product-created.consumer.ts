@@ -1,7 +1,9 @@
 import { Kafka } from 'kafkajs';
 import { ProductRepository } from '../domain/product.repository.js';
 import { CatalogProduct } from '../domain/catalog-product.entity.js';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class ProductCreatedConsumer {
   private consumer;
 

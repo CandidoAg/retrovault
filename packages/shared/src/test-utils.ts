@@ -3,7 +3,7 @@ import { KafkaContainer } from "@testcontainers/kafka";
 import { execSync } from 'child_process';
 import { Kafka, logLevel } from "kafkajs";
 
-export type ServiceName = 'catalog' | 'orders' | 'payment';
+export type ServiceName = 'catalog' | 'orders' | 'payment' | 'auth';
 
 export class TestHarness {
   /**
@@ -103,6 +103,11 @@ export class TestHarness {
         process.env.PAYMENT_DB_PORT = process.env.PAYMENT_DB_PORT || dummy.port;
         process.env.PAYMENT_DB_IP = process.env.PAYMENT_DB_IP || dummy.ip;
         process.env.STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "sk_test_dummy_key";
+        break;
+      case 'auth':
+        process.env.AUTH_DB_PORT = process.env.AUTH_DB_PORT || dummy.port;
+        process.env.AUTH_DB_IP = process.env.AUTH_DB_IP || dummy.ip;
+        process.env.JWT_SECRET = process.env.JWT_SECRET || "dummy_secret";
         break;
     }
   }

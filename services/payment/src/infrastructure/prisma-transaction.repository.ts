@@ -1,7 +1,9 @@
 import { PrismaClient } from './generated/client/index.js';
 import { Transaction, TransactionStatus } from '../domain/transaction.entity.js';
 import { TransactionRepository } from '../domain/transaction.repository.js';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PrismaTransactionRepository implements TransactionRepository {
   private prisma: PrismaClient;
 
