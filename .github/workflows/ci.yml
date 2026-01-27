@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         # Añadimos los nombres exactos de tus carpetas en services/
-        service: [catalog, orders, payment]
+        service: [auth, catalog, orders, payment]
       fail-fast: false
 
     steps:
