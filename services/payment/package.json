@@ -5,7 +5,9 @@
     "private": true,
     "scripts": {
         "build": "nest build",
-        "dev": "nest start --watch",
+        "copy-prisma": "shx mkdir -p dist/infrastructure/generated && shx cp -r src/infrastructure/generated/* dist/infrastructure/generated/",
+        "predev": "pnpm run copy-prisma",
+        "dev": "nest start --watch", 
         "prisma:generate": "prisma generate",
         "db:push": "prisma db push && pnpm prisma:generate",
         "test": "vitest run --passWithNoTests",

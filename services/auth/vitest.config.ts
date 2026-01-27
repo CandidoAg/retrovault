@@ -2,13 +2,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    // Exclusión de archivos para la ejecución de tests
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
       '**/src/infrastructure/generated/**', 
       '**/src/main.ts',
-      '**/src/test-*.ts',
     ],
     globals: true,
     environment: 'node',
@@ -21,15 +19,14 @@ export default defineConfig({
         '**/node_modules/**',
         '**/dist/**',
         'src/main.ts',
-        'src/test-*.ts',
         '**/*.test.ts',
-        '**/*.d.ts',
-        'src/infrastructure/generated/**', // Evita que v8 intente leer el cliente generado
-        'src/domain/*.events.ts',
-        'src/domain/*.repository.ts',
+        'src/infrastructure/generated/**',
+        'src/config/*.ts',
+        'src/infrastructure/kafka.client.ts',
+        'test-*.ts'
       ]
     },
-    testTimeout: 60000, 
-    hookTimeout: 60000,
+    testTimeout: 90000, // Un poco más por Kafka + Postgres
+    hookTimeout: 90000,
   },
 });

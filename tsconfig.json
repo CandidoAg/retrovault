@@ -13,7 +13,9 @@
     "paths": {
       "@retrovault/shared": ["packages/shared/src/index.ts"],
       "kafkajs": ["node_modules/kafkajs"]
-    }
+    },
+    "types": ["node"],
+    "typeRoots": ["./node_modules/@types"]
   },
   "exclude": ["node_modules", "**/dist"]
 }

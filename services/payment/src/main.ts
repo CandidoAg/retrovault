@@ -2,9 +2,13 @@
 import { NestFactory } from '@nestjs/core';
 import { PaymentModule } from './payment.module.js';
 import { OrderCreatedConsumer } from './infrastructure/order-created.consumer.js';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 async function bootstrap() {
-  const app = await NestFactory.create(PaymentModule);
+  const app = await NestFactory.create<NestFastifyApplication>(
+    PaymentModule,
+    new FastifyAdapter()
+  );
   
   const consumer = app.get(OrderCreatedConsumer);
   

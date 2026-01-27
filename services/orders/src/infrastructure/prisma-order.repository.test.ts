@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { PrismaOrderRepository } from './prisma-order.repository.js';
 import { Order } from '../domain/order.entity.js';
 import { PrismaClient } from './generated/client/index.js';
-import { a } from 'node_modules/vitest/dist/chunks/suite.d.BJWk38HB.js';
 
 describe('PrismaOrderRepository', () => {
   let prisma: PrismaClient;
