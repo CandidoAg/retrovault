@@ -14,13 +14,13 @@ export class AppModule implements NestModule {
     consumer
       .apply(AuthMiddleware)
       .exclude(
-        { path: 'auth/(.*)', method: RequestMethod.ALL },
+        { path: 'auth/*path', method: RequestMethod.ALL },
         { path: 'catalog', method: RequestMethod.GET }
       )
       .forRoutes(
         { path: 'orders', method: RequestMethod.ALL },
         { path: 'catalog', method: RequestMethod.POST },
-        { path: 'catalog/(.*)', method: RequestMethod.DELETE }
+        { path: 'catalog/*path', method: RequestMethod.DELETE }
       );
   }
 }

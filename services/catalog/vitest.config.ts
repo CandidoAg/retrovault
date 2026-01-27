@@ -27,6 +27,8 @@ export default defineConfig({
         'src/infrastructure/generated/**', // Evita que v8 intente leer el cliente generado
         'src/domain/*.events.ts',
         'src/domain/*.repository.ts',
+        '**/*.module.ts',
+        '**/*.controller.ts'
       ]
     },
     testTimeout: 60000, 

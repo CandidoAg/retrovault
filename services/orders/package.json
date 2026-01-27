@@ -6,7 +6,7 @@
     "scripts": {
         "build": "nest build",
         "copy-prisma": "shx mkdir -p dist/infrastructure/generated && shx cp -r src/infrastructure/generated/* dist/infrastructure/generated/",
-        "dev": "pnpm run copy-prisma && node ../../wait-for-prisma.js . && nest start --watch",    
+        "dev": "pnpm run copy-prisma && node ../../wait-for-prisma.js . && nest start --watch",
         "prisma:generate": "prisma generate",
         "db:push": "prisma db push && pnpm prisma:generate",
         "test": "vitest run --passWithNoTests",
@@ -19,6 +19,7 @@
         "@nestjs/core": "^11.1.12",
         "@nestjs/platform-fastify": "^11.1.12",
         "@prisma/client": "^6.19.2",
+        "dotenv": "^17.2.3",
         "kafkajs": "^2.2.4",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.2",

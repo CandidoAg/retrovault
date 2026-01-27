@@ -23,7 +23,9 @@ export default defineConfig({
         'src/infrastructure/generated/**',
         'src/config/*.ts',
         'src/infrastructure/kafka.client.ts',
-        'test-*.ts'
+        'test-*.ts',
+        '**/*.module.ts',
+        '**/*.controller.ts'
       ]
     },
     testTimeout: 90000, // Un poco más por Kafka + Postgres
