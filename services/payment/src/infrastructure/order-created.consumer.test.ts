@@ -40,14 +40,18 @@ describe('OrderCreatedConsumer', () => {
       const validCustomerId = "550e8400-e29b-41d4-a716-446655440002";
 
       const mockTransaction = new Transaction('tx-1', validOrderId, 100, TransactionStatus.COMPLETED, new Date());
-      mockUseCase.execute.mockResolvedValue(mockTransaction);
-
+      mockUseCase.execute.mockResolvedValue({ 
+        transaction: mockTransaction, 
+        checkoutUrl: 'http://stripe-url.com' 
+      });
+      
       const kafkaMessage = {
         value: Buffer.from(JSON.stringify({
           orderId: validOrderId,
           total: 100,
           paymentMethodId: 'pm_123',
           customerId: validCustomerId,
+          customerName: 'John Doe',
           occurredAt: new Date().toISOString(),
           items: [{ 
             id: validProductId, 

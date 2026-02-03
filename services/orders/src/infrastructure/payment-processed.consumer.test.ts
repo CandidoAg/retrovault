@@ -1,15 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PaymentProcessedConsumer } from './payment-processed.consumer.js';
+import { OrderStatus } from '@retrovault/shared';
 
 describe('PaymentProcessedConsumer', () => {
-  let mockKafka: any;
+  let consumer: PaymentProcessedConsumer;
   let mockUpdateStatusUseCase: any;
-  let consumerInstance: PaymentProcessedConsumer;
+  let mockKafka: any;
 
-  // Un UUID válido para pasar las validaciones de Zod
   const validOrderId = '550e8400-e29b-41d4-a716-446655440000';
+  const validTransactionId = 'txn_123456';
 
   beforeEach(() => {
+    mockUpdateStatusUseCase = {
+      execute: vi.fn().mockResolvedValue(undefined),
+    };
+
     mockKafka = {
       consumer: vi.fn().mockReturnValue({
         connect: vi.fn(),
@@ -23,76 +28,68 @@ describe('PaymentProcessedConsumer', () => {
       }),
     };
 
-    mockUpdateStatusUseCase = {
-      execute: vi.fn().mockResolvedValue(undefined),
-    };
-
-    consumerInstance = new PaymentProcessedConsumer(
-      mockKafka as any,
-      mockUpdateStatusUseCase as any
-    );
+    consumer = new PaymentProcessedConsumer(mockKafka as any, mockUpdateStatusUseCase);
   });
 
   it('debería procesar payment-completed y actualizar a PAID', async () => {
-    await consumerInstance.run();
-    const eachMessage = mockKafka.consumer().run.mock.calls[0][0].eachMessage;
+    await consumer.run();
+    const { eachMessage } = mockKafka.consumer().run.mock.calls[0][0];
 
-    const mockMessage = {
-      topic: 'payment-completed',
-      message: {
-        value: Buffer.from(JSON.stringify({
-          orderId: validOrderId,
-          transactionId: 'tx-123',
-          amount: 100,
-          occurredAt: new Date().toISOString()
-        }))
-      }
+    const payload = {
+      orderId: validOrderId,
+      transactionId: validTransactionId,
+      amount: 1000,
+      occurredAt: new Date().toISOString(),
     };
 
-    await eachMessage(mockMessage);
+    await eachMessage({
+      topic: 'payment-completed',
+      message: { value: Buffer.from(JSON.stringify(payload)) },
+    });
 
     expect(mockUpdateStatusUseCase.execute).toHaveBeenCalledWith({
       orderId: validOrderId,
-      status: 'PAID'
+      status: 'PAID',
     });
   });
 
   it('debería procesar payment-failed y actualizar a CANCELLED', async () => {
-    await consumerInstance.run();
-    const eachMessage = mockKafka.consumer().run.mock.calls[0][0].eachMessage;
+    await consumer.run();
+    const { eachMessage } = mockKafka.consumer().run.mock.calls[0][0];
 
-    const mockMessage = {
-      topic: 'payment-failed',
-      message: {
-        value: Buffer.from(JSON.stringify({
-          orderId: validOrderId,
-          reason: 'Insufficient funds',
-          productIds: [validOrderId], 
-          occurredAt: new Date().toISOString() 
-        }))
-      }
+    const payload = {
+      orderId: validOrderId,
+      transactionId: validTransactionId,
+      amount: 1000,
+      reason: 'Insufficient funds',
+      productNames: 'prod-1, prod-2',
+      occurredAt: new Date().toISOString(),
     };
 
-    await eachMessage(mockMessage);
+    await eachMessage({
+      topic: 'payment-failed',
+      message: { value: Buffer.from(JSON.stringify(payload)) },
+    });
 
     expect(mockUpdateStatusUseCase.execute).toHaveBeenCalledWith({
       orderId: validOrderId,
-      status: 'CANCELLED'
+      status: 'CANCELLED',
     });
   });
 
   it('debería manejar errores de validación (Zod) sin romper el proceso', async () => {
-    await consumerInstance.run();
-    const eachMessage = mockKafka.consumer().run.mock.calls[0][0].eachMessage;
+    await consumer.run();
+    const { eachMessage } = mockKafka.consumer().run.mock.calls[0][0];
 
-    const invalidMessage = {
-      topic: 'payment-completed',
-      message: {
-        value: Buffer.from(JSON.stringify({ orderId: 'no-es-uuid' }))
-      }
-    };
+    const invalidPayload = { foo: 'bar' };
 
-    await expect(eachMessage(invalidMessage)).resolves.not.toThrow();
+    await expect(
+      eachMessage({
+        topic: 'payment-completed',
+        message: { value: Buffer.from(JSON.stringify(invalidPayload)) },
+      })
+    ).resolves.not.toThrow(); 
+
     expect(mockUpdateStatusUseCase.execute).not.toHaveBeenCalled();
   });
 });

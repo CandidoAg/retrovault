@@ -23,7 +23,7 @@ export class OrderCreatedConsumer {
           console.log(`[Catalog] 📦 Processing stock reservation for order: ${event.orderId}`);
 
           for (const item of event.items) {
-             await this.decreaseStock.execute(item.id, 1);
+            await this.decreaseStock.execute(item.name, item.quantity);
           }
         } catch (error) {
           console.error('[Catalog] ❌ Invalid order-created event:', error);

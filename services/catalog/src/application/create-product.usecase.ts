@@ -10,8 +10,8 @@ export class CreateProductUseCase {
     private readonly eventPublisher: ProductCreatedPublisher
   ) {}
 
-  async execute(data: { name: string; price: number; stock: number; year: number }): Promise<Product> {
-    const product = new Product(uuidv4(), data.name, data.price, data.stock, data.year);
+  async execute(data: { name: string; price: number; stock: number; year: number, brand: string, description?: string, rating?: number }): Promise<Product> {
+    const product = new Product(uuidv4(), data.name, data.price, data.stock, data.year, data.brand, data.description, data.rating);
 
     await this.productRepository.save(product);
 

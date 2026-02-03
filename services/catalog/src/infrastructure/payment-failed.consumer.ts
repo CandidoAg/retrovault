@@ -24,10 +24,15 @@ export class PaymentFailedConsumer {
           const event = PaymentFailedEventSchema.parse(rawPayload);
 
           console.log(`[Catalog] ⚠️ Payment failed for order ${event.orderId}. Starting compensation...`);
+          
+          console.log(`event.productNames: ${event.productNames}`);
+          const productSummary = JSON.parse(event.productNames); 
 
-          await this.compensateStockUseCase.execute({
-            items: event.productIds.map((id) => ({ id, quantity: 1 }))
-          });
+         const itemsForCompensation = Object.entries(productSummary).map(([name, quantity]) => ({
+            name,
+            quantity: quantity as number
+          }));
+          await this.compensateStockUseCase.execute({ items: itemsForCompensation});
 
           console.log(`[Catalog] ✅ Compensation completed for order ${event.orderId}`);
 

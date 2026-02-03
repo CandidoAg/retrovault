@@ -8,6 +8,7 @@ describe('User Entity', () => {
       'test@example.com',
       'hashed_password',
       'John Doe',
+      'USER',
       new Date()
     );
     expect(user.email).toBe('test@example.com');
@@ -15,7 +16,7 @@ describe('User Entity', () => {
 
   it('should throw error if email is invalid', () => {
     expect(() => {
-      new User('1', 'invalid-email', 'hash', 'Name', new Date());
+      new User('1', 'invalid-email', 'hash', 'Name', 'USER' ,new Date());
     }).toThrow("Invalid email format");
   });
 });

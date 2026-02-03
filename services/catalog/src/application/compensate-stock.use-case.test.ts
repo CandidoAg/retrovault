@@ -6,7 +6,8 @@ describe('CompensateStockUseCase', () => {
   const mockRepo = {
     findById: vi.fn(),
     save: vi.fn(),
-    findAll: vi.fn()
+    findAll: vi.fn(),
+    findByName: vi.fn()
   };
 
   const mockPublisher = {
@@ -18,11 +19,11 @@ describe('CompensateStockUseCase', () => {
   });
 
   it('debería sumar stock de vuelta y publicar el evento para cada item', async () => {
-    const product = new Product('prod-123', 'Zelda', 50, 10, 1986);
-    mockRepo.findById.mockResolvedValue(product);
+    const product = new Product('prod-123', 'Zelda', 50, 10, 1986, 'Nintendo', 'prod-123');
+    mockRepo.findByName.mockResolvedValue(product);
     
     const useCase = new CompensateStockUseCase(mockRepo as any, mockPublisher as any);
-    const input = { items: [{ id: 'prod-123', quantity: 5 }] };
+    const input = { items: [{ name: 'Zelda', quantity: 5 }] };
 
     await useCase.execute(input);
 

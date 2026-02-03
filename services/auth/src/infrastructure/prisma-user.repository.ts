@@ -17,6 +17,7 @@ export class PrismaUserRepository implements UserRepository {
         email: user.email,
         password: user.passwordHash,
         name: user.name,
+        role: user.role,
       },
     });
   }
@@ -30,6 +31,7 @@ export class PrismaUserRepository implements UserRepository {
       row.email, 
       row.password,
       row.name, 
+      row.role,
       row.createdAt
     );
   }

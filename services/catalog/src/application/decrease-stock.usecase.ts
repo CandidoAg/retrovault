@@ -9,13 +9,13 @@ export class DecreaseStockUseCase {
     private eventPublisher: ProductCreatedPublisher
   ) {}
 
-  async execute(productId: string, quantity: number) {
-    console.log(`🔍 Intentando descontar stock de ID: ${productId}`);
+  async execute(productName: string, quantity: number) {
+    console.log(`🔍 Intentando descontar stock de name: ${productName}`);
 
-    const product = await this.productRepo.findById(productId);
+    const product = await this.productRepo.findByName(productName);
     
     if (!product) {
-      console.error(`❌ ERROR: Producto con ID ${productId} no existe en Catalog.`);
+      console.error(`❌ ERROR: Producto con ID ${productName} no existe en Catalog.`);
       return; 
     }
 

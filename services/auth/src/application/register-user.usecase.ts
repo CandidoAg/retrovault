@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { User } from '../domain/user.entity.js';
 import { UserRepository } from '../domain/user.repository.js';
+import { UserRole } from '@prisma/client';
 
 export class RegisterUser {
   constructor(private userRepository: UserRepository) {}
@@ -11,7 +12,7 @@ export class RegisterUser {
 
     const passwordHash = await bcrypt.hash(passwordPlain, 10);
 
-    const user = new User(crypto.randomUUID(),email,passwordHash,name,new Date());
+    const user = new User(crypto.randomUUID(),email,passwordHash,name, UserRole.USER, new Date());
     await this.userRepository.save(user);
   }
 }

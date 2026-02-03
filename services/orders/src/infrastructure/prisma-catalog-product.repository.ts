@@ -9,28 +9,34 @@ export class PrismaCatalogProductRepository implements ProductRepository {
 
   async save(product: CatalogProduct): Promise<void> {
     await this.prisma.catalogProduct.upsert({
-      where: { id: product.id }, // El ID viene de Catalog
+      where: { name: product.name }, // El ID viene de Catalog
       update: { 
         name: product.name, 
         price: product.price, 
-        stock: product.stock 
+        stock: product.stock,
+        brand: product.brand,
+        description: product.description ,
+        rating: product.rating
       },
       create: { 
         id: product.id, 
         name: product.name, 
         price: product.price, 
-        stock: product.stock 
+        stock: product.stock,
+        brand: product.brand,
+        description: product.description,
+        rating: product.rating ?? 0
       }
     });
   }
 
   async findById(id: string): Promise<CatalogProduct | null> {
     const p = await this.prisma.catalogProduct.findUnique({ where: { id } });
-    return p ? new CatalogProduct(p.id, p.name, p.price, p.stock) : null;
+    return p ? new CatalogProduct(p.id, p.name, p.price, p.stock, p.brand, p.description??undefined, p.rating??0) : null;
   }
 
   async findAll(): Promise<CatalogProduct[]> {
     const products = await this.prisma.catalogProduct.findMany();
-    return products.map(p => new CatalogProduct(p.id, p.name, p.price, p.stock));
+    return products.map(p => new CatalogProduct(p.id, p.name, p.price, p.stock, p.brand, p.description??undefined, p.rating??0));
   }
 }

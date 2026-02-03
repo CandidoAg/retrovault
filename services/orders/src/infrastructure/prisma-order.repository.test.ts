@@ -12,6 +12,7 @@ describe('PrismaOrderRepository', () => {
      repository = new PrismaOrderRepository();
      (repository as any).prisma = prisma; // Inyectamos el cliente
     
+     await prisma.orderItem.deleteMany();
      await prisma.order.deleteMany();
      await prisma.catalogProduct.deleteMany();
   });
@@ -49,4 +50,30 @@ describe('PrismaOrderRepository', () => {
     const all = await repository.findAll();
     expect(all).toHaveLength(2);
     });
+  
+  it('should find orders by customer id with formatted items and dates', async () => {
+    const customerId = 'cust-999';
+    const orderId = 'ord-complex-1';
+    
+    // Creamos la orden con items
+    const order = new Order(orderId, customerId, [
+      { id: 'prod-1', name: 'Mario', price: 10, quantity: 1, stock: 1 },
+    ], 'PAID');
+    
+    await repository.save(order);
+
+    const results = await repository.findByCustomerId(customerId);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].id).toBe(orderId);
+    expect(results[0].items[0].name).toBe('Mario');
+    expect(results[0].items[0].price).toBe(10);
+    
+    expect((results[0] as any).createdAt).toMatch(/\d{2}\/\d{2}\/\d{4}/);
+  });
+
+  it('should return empty array if customer has no orders', async () => {
+    const results = await repository.findByCustomerId('ghost-customer');
+    expect(results).toEqual([]);
+  });
 });

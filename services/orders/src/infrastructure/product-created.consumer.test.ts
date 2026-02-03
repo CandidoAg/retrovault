@@ -52,7 +52,11 @@ describe('ProductCreatedConsumer', () => {
       id: 'prod-123',
       name: 'Laptop Gaming',
       price: 1200,
-      stock: 10
+      stock: 10,
+      brand: 'Asus',
+      description: 'Laptop de alta calidad para juegos',
+      rating: 4.5,
+      year: 2022,
     };
 
     const kafkaMessage = {
@@ -74,6 +78,10 @@ describe('ProductCreatedConsumer', () => {
     expect(savedProduct.id).toBe(mockPayload.id);
     expect(savedProduct.name).toBe(mockPayload.name);
     expect(savedProduct.stock).toBe(mockPayload.stock);
+    expect(savedProduct.price).toBe(mockPayload.price);
+    expect(savedProduct.brand).toBe(mockPayload.brand);
+    expect(savedProduct.description).toBe(mockPayload.description);
+    expect(savedProduct.rating).toBe(mockPayload.rating);
   });
 
   it('no debe hacer nada si el mensaje es nulo', async () => {

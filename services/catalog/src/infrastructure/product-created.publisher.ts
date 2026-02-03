@@ -15,7 +15,10 @@ export class ProductCreatedPublisher {
       name: product.name,
       price: product.price,
       stock: product.stock,
-      year: product.year
+      year: product.year,
+      brand: product.brand,
+      description: product.description,
+      rating: product.rating
     };
 
     await this.producer.send({

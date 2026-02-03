@@ -30,7 +30,7 @@ beforeAll(async () => {
   });
 
   it('debería enviar correctamente un evento de producto creado', async () => {
-    const product = new Product(crypto.randomUUID(), 'Zelda Ocarina', 80, 15, 1998);
+    const product = new Product(crypto.randomUUID(), 'Zelda Ocarina', 80, 15, 1998, 'Nintendo', "Description 1", 4.5);
 
     // Usamos la instancia importada dinámicamente
     const consumer = kafkaInstance.consumer({ groupId: 'test-group' });

@@ -17,7 +17,7 @@ describe('PrismaCatalogProductRepository', () => {
   });
 
   it('should save a product (create)', async () => {
-    const product = new CatalogProduct('p-1', 'Game Boy', 100, 5);
+    const product = new CatalogProduct('p-1', 'Game Boy', 100, 5, 'Nintendo');
     
     await repository.save(product);
     const found = await repository.findById('p-1');
@@ -26,11 +26,11 @@ describe('PrismaCatalogProductRepository', () => {
   });
 
   it('should upsert a product (update if exists)', async () => {
-    const product = new CatalogProduct('p-1', 'Game Boy', 100, 5);
+    const product = new CatalogProduct('p-1', 'Game Boy', 100, 5, 'Nintendo');
     await repository.save(product);
 
     // Actualizamos el mismo ID con nuevo stock
-    const updatedProduct = new CatalogProduct('p-1', 'Game Boy', 100, 10);
+    const updatedProduct = new CatalogProduct('p-1', 'Game Boy', 100, 10, 'Nintendo');
     await repository.save(updatedProduct);
 
     const found = await repository.findById('p-1');
@@ -38,8 +38,8 @@ describe('PrismaCatalogProductRepository', () => {
   });
 
   it('should find all products', async () => {
-    await repository.save(new CatalogProduct('p-1', 'A', 10, 1));
-    await repository.save(new CatalogProduct('p-2', 'B', 20, 2));
+    await repository.save(new CatalogProduct('p-1', 'A', 10, 1, 'Nintendo'));
+    await repository.save(new CatalogProduct('p-2', 'B', 20, 2, 'Nintendo'));
 
     const all = await repository.findAll();
     expect(all).toHaveLength(2);

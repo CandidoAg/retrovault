@@ -15,7 +15,7 @@ export class LoginUser {
     const isPasswordCorrect = await bcrypt.compare(passwordPlain, user.passwordHash);
     if (!isPasswordCorrect) throw new Error("Invalid credentials");
 
-    const token = jwt.sign({ userId: user.id, email: user.email },this.jwtSecret,{ expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.id, email: user.email, name: user.name, role: user.role },this.jwtSecret,{ expiresIn: '1h' });
     return { token };
   }
 }

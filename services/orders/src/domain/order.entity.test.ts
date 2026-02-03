@@ -4,8 +4,8 @@ import { RetroProduct } from '@retrovault/shared';
 
 describe('Order Entity', () => {
   const mockProducts: RetroProduct[] = [
-    { id: '1', name: 'GameBoy', price: 100, stock: 5 },
-    { id: '2', name: 'NES', price: 200, stock: 2 }
+    { id: '1', name: 'GameBoy', price: 100, stock: 5, quantity: 1 },
+    { id: '2', name: 'NES', price: 200, stock: 2, quantity: 1 },
   ];
 
   it('should create an order with PENDING status by default', () => {

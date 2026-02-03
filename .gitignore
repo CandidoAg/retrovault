@@ -45,3 +45,20 @@ Thumbs.db
 # --- Vitest / Testing ---
 # Vitest a veces genera archivos temporales de inspección
 .vitest-result.json
+
+# --- Next.js Especifico (AÑADIR ESTO) ---
+.next/
+out/
+
+# --- Ajuste de compilación ---
+# En lugar de *.js global, mejor ignorar carpetas de salida específicas
+# *.js  <-- COMENTA O ELIMINA ESTA LÍNEA si ves que te ignora los .config.mjs
+dist/
+build/
+
+# --- Pnpm (específico por tu flujo) ---
+.pnpm-store/
+store-lock.json
+
+# --- Vercel (si despliegas ahí) ---
+.vercel

@@ -12,13 +12,16 @@ export class PrismaTransactionRepository implements TransactionRepository {
   }
 
   async save(transaction: Transaction): Promise<void> {
-    await this.prisma.transaction.create({
-      data: {
+    await this.prisma.transaction.upsert({
+      where: { orderId: transaction.orderId },
+      update: { 
+        amount: transaction.amount 
+      },
+      create: {
         id: transaction.id,
         orderId: transaction.orderId,
         amount: transaction.amount,
         status: transaction.status,
-        createdAt: transaction.createdAt,
       },
     });
   }
@@ -30,9 +33,9 @@ export class PrismaTransactionRepository implements TransactionRepository {
     });
   }
 
-  async findByOrderId(id: string): Promise<Transaction | null> {
+  async findByOrderId(orderId: string): Promise<Transaction | null> {
     const record = await this.prisma.transaction.findUnique({
-      where: { id },
+      where: { orderId },
     });
 
     if (!record) return null;

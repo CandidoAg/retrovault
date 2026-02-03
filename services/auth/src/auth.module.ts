@@ -3,10 +3,12 @@ import { PrismaUserRepository } from './infrastructure/prisma-user.repository.js
 import { RegisterUser } from './application/register-user.usecase.js';
 import { LoginUser } from './application/login-user.usecase.js';
 import { AuthController } from './infrastructure/http/auth.controller.js';
+import { InitialAdminService } from "./infrastructure/initial-admin.service.js";
 
 @Module({
   controllers: [AuthController],
   providers: [
+    InitialAdminService,
     {
       provide: 'UserRepository',
       useClass: PrismaUserRepository,

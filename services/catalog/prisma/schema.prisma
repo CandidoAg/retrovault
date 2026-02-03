@@ -14,4 +14,8 @@ model Product {
   price Float
   stock Int
   year  Int
+  brand       String
+  description String?
+  rating      Float    @default(0.0)
+  createdAt   DateTime @default(now())
 }

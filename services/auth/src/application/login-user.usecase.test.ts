@@ -25,6 +25,7 @@ describe('LoginUser Use Case', () => {
     const decoded = jwt.verify(result.token, JWT_SECRET) as any;
     expect(decoded.userId).toBe(testUser.id);
     expect(decoded.email).toBe(testUser.email);
+    expect(decoded.name).toBe(testUser.name);
   });
 
   it('should throw error if user is not found', async () => {

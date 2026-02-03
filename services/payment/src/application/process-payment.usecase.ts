@@ -1,65 +1,69 @@
 import Stripe from 'stripe';
 import { Transaction, TransactionStatus } from '../domain/transaction.entity.js';
 import { TransactionRepository } from '../domain/transaction.repository.js';
+import { Injectable, Inject } from '@nestjs/common';
 
 export interface ProcessPaymentInput {
   orderId: string;
   amount: number;
-  paymentMethodId?: string;
+  customerName: string;
+  items: any[];
 }
 
+@Injectable()
 export class ProcessPaymentUseCase {
-  private stripe: Stripe;
+  constructor(
+    @Inject('TransactionRepository')
+    private readonly transactionRepository: TransactionRepository,
+    private readonly stripe: Stripe 
+  ) {}
 
-  constructor(private readonly transactionRepository: TransactionRepository) {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error('STRIPE_SECRET_KEY no definida en el entorno');
+  async execute(input: ProcessPaymentInput): Promise<{ transaction: Transaction; checkoutUrl: string }> {
+    console.log(`[PaymentUseCase] 🆕 Processing request for order ${input.orderId}...`);
+
+    const existingTransaction = await this.transactionRepository.findByOrderId(input.orderId);
+
+    if (existingTransaction) {
+      console.log(`[PaymentUseCase] 📢 Transaction already exists for order ${input.orderId}. Returning existing session.`);
+      
+      const session = await this.createStripeSession(input, existingTransaction.id);
+      return { transaction: existingTransaction, checkoutUrl: session.url as string };
     }
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  }
 
-  async execute(input: ProcessPaymentInput): Promise<Transaction> {
-    console.log(`[PaymentUseCase] 🆕 Registering payment attempt for order ${input.orderId} via Stripe...`);
-
-    // 1. REGISTRO INICIAL (Estado PENDING por defecto)
     const transaction = Transaction.create(input.orderId, input.amount);
     await this.transactionRepository.save(transaction);
 
-    let finalStatus: TransactionStatus;
-
     try {
-      // 2. LÓGICA DE NEGOCIO REAL CON STRIPE
-      // Nota: Stripe usa céntimos, multiplicamos por 100
-      const paymentIntent = await this.stripe.paymentIntents.create({
-        amount: Math.round(input.amount * 100),
-        currency: 'usd',
-        payment_method: input.paymentMethodId || 'pm_card_visa', // Tarjeta de éxito por defecto
-        confirm: true,
-        automatic_payment_methods: {
-          enabled: true,
-          allow_redirects: 'never',
-        },
-      });
-
-      finalStatus = paymentIntent.status === 'succeeded' 
-        ? TransactionStatus.COMPLETED 
-        : TransactionStatus.FAILED;
-
+      const session = await this.createStripeSession(input, transaction.id);
+      return { transaction, checkoutUrl: session.url as string };
     } catch (error: any) {
       console.error(`[PaymentUseCase] ❌ Stripe Error: ${error.message}`);
-      finalStatus = TransactionStatus.FAILED;
+      await this.transactionRepository.updateStatus(transaction.id, TransactionStatus.FAILED);
+      throw error;
     }
+  }
 
-    // 3. ACTUALIZACIÓN FINAL EN TU DB
-    console.log(`[PaymentUseCase] 🔄 Updating transaction status to ${finalStatus}...`);
-    await this.transactionRepository.updateStatus(transaction.id, finalStatus);
+  private async createStripeSession(input: ProcessPaymentInput, transactionId: string) {
+    const productSummary = input.items.reduce((acc, item) => {
+      acc[item.name] = item.quantity;
+      return acc;
+    }, {} as Record<string, number>);
 
-    return new Transaction(
-      transaction.id,
-      transaction.orderId,
-      transaction.amount,
-      finalStatus,
-      transaction.createdAt
-    );
+    const productMetadata = JSON.stringify(productSummary);
+    return await this.stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: input.items.map(item => ({
+        price_data: {
+          currency: 'eur',
+          product_data: { name: item.name },
+          unit_amount: Math.round(item.price * 100),
+        },
+        quantity: item.quantity || 1,
+      })),
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}/orders/status?orderId=${input.orderId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/orders/status?orderId=${input.orderId}&session_id={CHECKOUT_SESSION_ID}&status=cancelled`,
+      metadata: { orderId: input.orderId, transactionId, productNames: productMetadata.substring(0, 500) },
+    });
   }
 }

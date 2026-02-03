@@ -2,12 +2,15 @@ import { kafka } from './kafka.client.js';
 import { ProcessPaymentUseCase } from '../application/process-payment.usecase.js';
 import { Transaction } from '../domain/transaction.entity.js';
 import { OrderCreatedEventSchema } from '@retrovault/shared'; 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class OrderCreatedConsumer {
-  constructor(private readonly processPaymentUseCase: ProcessPaymentUseCase, 
-              private readonly onPaymentProcessed: (transaction: Transaction, items: string[]) => Promise<void>) {}
+  constructor(
+    private readonly processPaymentUseCase: ProcessPaymentUseCase, 
+    @Inject('ON_PAYMENT_PROCESSED')
+    private readonly onPaymentProcessed: (transaction: Transaction, items: string[]) => Promise<void>
+  ) {}
 
   async run() {
     const consumer = kafka.consumer({ groupId: 'payment-group' });
@@ -33,18 +36,21 @@ export class OrderCreatedConsumer {
           const event = OrderCreatedEventSchema.parse(rawPayload);
           console.log(`[Payment] ✅ Event validated: order-created for ID: ${event.orderId}`);
           
-          const transaction = await this.processPaymentUseCase.execute({
+          const result = await this.processPaymentUseCase.execute({
             orderId: event.orderId,
             amount: event.total,
-            paymentMethodId: event.paymentMethodId
+            customerName: event.customerName || '', 
+            items: event.items 
           });
+
+          const { transaction } = result;
 
           const productIds = event.items.map(item => item.id);
           
           await this.onPaymentProcessed(transaction, productIds);
 
         } catch (error) {
-          console.error(`[Payment] ❌ Invalid event format received:`, error);
+          console.error(`[Payment] ❌ Error procesando evento de orden:`, error);
         }
       },
     });

@@ -7,7 +7,6 @@
     "assets": [
       {
         "include": "infrastructure/generated/**/*",
-        "outDir": "dist/src", 
         "watchAssets": true
       }
     ]

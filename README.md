@@ -5,6 +5,11 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs)
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React Query](https://img.shields.io/badge/-React%20Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)
+![Lucide React](https://img.shields.io/badge/-Lucide%20React-311045?style=for-the-badge&logo=lucide&logoColor=white)
 ![Fastify](https://img.shields.io/badge/fastify-%23000000.svg?style=for-the-badge&logo=fastify)
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -19,18 +24,21 @@ Sistema de e-commerce especializado en videojuegos clásicos, desarrollado con *
 ![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
 - **Lenguaje**: TypeScript 
 - **Framework**: NestJS (Microservicios)
-- **API Gateway**: Fastify con Proxy inverso.
+- **API Gateway**: Fastify con Proxy inverso para ruteo de alta eficiencia.
 - **Seguridad**: Autenticación centralizada mediante JWT (JSON Web Tokens).
-- **Runtime**: Node.js (tsx para ejecución directa)
+- **Runtime**: Node.js con tsx para soporte nativo de ESM (ECMAScript Modules)
 - **Base de Datos**: PostgreSQL (Instancias independientes por servicio)
 - **ORM**: Prisma
 - **Validación de Datos**: Zod (Validación estricta de variables de entorno y contratos de Kafka).
 - **Testing**: **Vitest** (Unit & Integration) + **Testcontainers** (Bases de datos PostgreSQL efímeras e independientes por suite).
 - **Mensajería**: Apache Kafka (KafkaJS)
-- **Gestor de Monorepo**: Turborepo (Orquestación de tareas y caché persistente).
+- **Gestor de Monorepo**: Turborepo con orquestación de tareas y @retrovault/shared como librería de contratos.
 - **Gestor de Paquetes**: pnpm
 - **Infraestructura**: Docker & Docker Compose
 - **Pasarela de Pagos**: Stripe API (SDK oficial) para procesamiento de transacciones y simulación de estados financieros.
+- **Frontend**: Next.js 15 (App Router), Tailwind CSS, Lucide React.
+- **Gestión de Estado & Fetching**: TanStack Query (React Query) para sincronización con el Gateway.
+- **Checkout**: Stripe Checkout (Pre-built page) para una experiencia de pago segura y certificada.
 
 ## 🧪 Testing & Calidad (Fase 3 - Completada)
 Todo el ecosistema de RetroVault cuenta con una suite de tests automatizada que garantiza la integridad de los datos y la lógica de negocio:
@@ -88,13 +96,22 @@ PAYMENT_DB_IP=localhost
 DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${PAYMENT_DB_IP}:${PAYMENT_DB_PORT}/${POSTGRES_DB}"
 KAFKA_BROKERS="localhost:9092"
 STRIPE_SECRET_KEY=sk_test_... # Tu clave secreta de Stripe (Test Mode)
+STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET
+FRONTEND_URL=tu_ip_del_frontend
 ```
 
 ### `services/auth/.env` & `services/gateway/.env`
 ```env
-JWT_SECRET=tu_clave_secreta_super_segura
-AUTH_PORT=3004
-GATEWAY_PORT=3000
+POSTGRES_USER=POSTGRES_USER
+POSTGRES_PASSWORD=POSTGRES_PASSWORD
+POSTGRES_DB=POSTGRES_DB
+CATALOG_DB_PORT=CATALOG_DB_PORT
+CATALOG_DB_IP=CATALOG_DB_IP
+DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${CATALOG_DB_IP}:${CATALOG_DB_PORT}/${POSTGRES_DB}"
+JWT_SECRET=tu_jwt_secret
+ADMIN_EMAIL=admin_email_que_quiers
+ADMIN_PASSWORD=password_que quieras
+ADMIN_NAME=name_que_quieras
 ```
 
 ## 🛡️ Validación Estricta (Fail-Fast)
@@ -139,16 +156,29 @@ pnpm dev
 > 💡 **Tip de sincronización:** El test de Orders espera automáticamente 10 segundos. Esto garantiza que Kafka haya entregado los productos de Catalog a la base de datos de Orders antes de intentar comprar.
 
 ## 🔄 Flujo de la Saga (Coreografía)
-1. **Catalog** publica productos al arrancar.
-2. **Orders** sincroniza su base de datos local (Vista Materializada).
-3. **Orders** publica ``order-created`` con un ``paymentMethodId`` dinámico (Success/Fail).
-4. **Catalog** consume la orden y realiza una Reserva de Stock (Stock -1).
-5. **Payment (Stripe SDK)** procesa el pago real:
-    - **Si el token es de éxito:** Publica ``payment-completed``.
-    - **Si el token es de error (fondos insuficientes):** Publica ``payment-failed``.
-6. **Compensación (Saga)**:
-    - **Catalog** detecta el fallo, suma +1 al stock y publica la actualización.
-    - **Orders** marca la orden como ``CANCELLED``.
+```mermaid
+graph TD
+    A[Orders: Order Created] -->|Event| B(Catalog: Reserve Stock)
+    B -->|Success| C(Payment: Stripe Processing)
+    B -->|Out of Stock| D[Orders: Mark Cancelled]
+    C -->|Charge Success| E[Orders: Mark Completed]
+    C -->|Charge Failed| F(Catalog: Compensation - Restore Stock)
+    F --> D
+```
+
+## 💳 Flujo de Pago: Stripe Checkout Mode
+A diferencia de una integración básica, RetroVault utiliza el Checkout Mode de Stripe:
+
+1. El servicio de **Orders** genera una sesión de pago segura.
+2. El **Gateway** redirige al usuario a la pasarela optimizada de Stripe.
+3. Tras el pago, Stripe notifica al **Gateway** mediante **Webhooks**, lo que dispara el evento ``payment-completed`` en Kafka para que la Saga continúe su curso de forma asíncrona.
+
+## 📦 Inicialización Automática (Seeding)
+El sistema está diseñado para ser funcional desde el primer segundo ("Batteries Included"):
+
+- **Catalog Seeding**: Al levantar el servicio por primera vez, se genera automáticamente un catálogo base de consolas y juegos clásicos (NES, Genesis, PS1) para poblar la UI.
+
+- **Admin Creation**: El servicio de Auth verifica la existencia de un usuario administrador basado en las variables de entorno; si no existe, lo crea automáticamente para permitir el acceso al panel de gestión.
 
 ## 🗺️ Roadmap del Proyecto
 Este proyecto sigue una evolución modular, desde la base de la comunicación asíncrona hasta la resiliencia avanzada de sistemas distribuidos.
@@ -176,10 +206,11 @@ Este proyecto sigue una evolución modular, desde la base de la comunicación as
 - **Testing de Integración (Payment):** Pendiente replicar la suite de Orders en los demás servicios.
 
 ### 💻 Fase 4: Seguridad y Frontend Web (En Progreso)
-- [x] **API Gateway**: Punto de entrada único basado en Fastify con ruteo inteligente.
-- [x] **Autenticación JWT**: Seguridad centralizada que protege las rutas críticas.
-- [x] **Auth Service**: Microservicio dedicado a la gestión de identidad.
-- [ ] **Frontend (Next.js/React)**: Desarrollo de la plataforma e-commerce web para navegación y compra de productos.
+- [x] **API Gateway & Auth**: Punto de entrada único con seguridad centralizada (JWT) y ruteo dinámico.
+- [x] **Frontend Core**: Arquitectura base en Next.js/React consumiendo el Gateway.
+- [ ] **Retro Dark Mode**: Sistema de temas dinámico con estética retro/terminal (CRT Effect).
+- [ ] **Internationalization (i18n)**: Soporte multi-idioma para escalabilidad global.
+- [ ] **Real-time UX**: Notificaciones instantáneas de estados de la Saga mediante WebSockets/SSE.
 
 ### 📈 Fase 5: Resiliencia y Observabilidad (Enterprise)
 - [ ] **Observabilidad:** Tracing distribuido con OpenTelemetry para visualizar el viaje de cada orden.

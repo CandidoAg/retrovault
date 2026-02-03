@@ -25,7 +25,7 @@ describe('PaymentProcessedPublisher', () => {
 
   it('debería publicar en "payment-completed" cuando la transacción es exitosa', async () => {
     const tx = new Transaction('tx-ok', 'order-ok', 50, TransactionStatus.COMPLETED, new Date());
-    const items = ['p1', 'p2'];
+    const items = "'p1', 'p2'";
 
     await publisher.publish(tx, items);
 
@@ -44,7 +44,7 @@ describe('PaymentProcessedPublisher', () => {
     const validProductId = "123e4567-e89b-12d3-a456-426614174002";
 
     const tx = new Transaction(validTxId, validOrderId, 50, TransactionStatus.FAILED, new Date());
-    const items = [validProductId];
+    const items = [validProductId].join(', ');;
 
     await publisher.publish(tx, items);
 

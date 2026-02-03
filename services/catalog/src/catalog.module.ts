@@ -8,10 +8,14 @@ import { OrderCreatedConsumer } from './infrastructure/order-created.consumer.js
 import { PaymentFailedConsumer } from './infrastructure/payment-failed.consumer.js';
 import { kafka } from './infrastructure/kafka.client.js';
 import { CreateProductUseCase } from './application/create-product.usecase.js';
+import { SeedService } from './infrastructure/seed.service.js';
+import { DeleteProductUseCase } from './application/delete-product.usecase.js';
+import { UpdateProductUseCase } from './application/update-product.usecase.js';
 
 @Module({
   controllers: [CatalogController],
   providers: [
+    SeedService,
     // Repositorio
     PrismaProductRepository,
     // Publisher
@@ -23,6 +27,16 @@ import { CreateProductUseCase } from './application/create-product.usecase.js';
       useFactory: (repo: PrismaProductRepository, pub: ProductCreatedPublisher) => 
         new CreateProductUseCase(repo, pub),
       inject: [PrismaProductRepository, ProductCreatedPublisher],
+    },
+    {
+      provide: UpdateProductUseCase,
+      useFactory: (repo: PrismaProductRepository) => new UpdateProductUseCase(repo),
+      inject: [PrismaProductRepository],
+    },
+    {
+      provide: DeleteProductUseCase,
+      useFactory: (repo: PrismaProductRepository) => new DeleteProductUseCase(repo),
+      inject: [PrismaProductRepository],
     },
     {
       provide: DecreaseStockUseCase,

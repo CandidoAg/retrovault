@@ -54,7 +54,7 @@ describe('PrismaTransactionRepository Integration', () => {
     const tx = Transaction.create('order-789', 25);
     await repository.save(tx);
 
-    const found = await repository.findByOrderId(tx.id);
+    const found = await repository.findByOrderId(tx.orderId);
 
     expect(found).not.toBeNull();
     expect(found?.id).toBe(tx.id);

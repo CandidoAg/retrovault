@@ -22,6 +22,7 @@ describe('PrismaUserRepository Integration Test', () => {
       'test@auth.com',
       '$2b$10$hashedpassword', // Simulamos un hash de bcrypt
       'Candi Auth',
+      'USER',
       new Date()
     );
 

@@ -4,7 +4,10 @@ export class Product {
     public name: string,
     public price: number,
     public stock: number,
-    public year: number
+    public year: number,
+    public brand: string,
+    public description?: string,
+    public rating?: number
   ) {}
 
   public updatePrice(newPrice: number): void {

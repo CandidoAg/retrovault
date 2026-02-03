@@ -2,7 +2,13 @@ import { Order } from '../domain/order.entity.js';
 import { OrderRepository } from '../domain/order.repository.js';
 import { ProductRepository } from '../domain/product.repository.js';
 import { OrderCreatedPublisher } from '../infrastructure/order-created.publisher.js';
+import { RetroProduct } from '@retrovault/shared';
 import { v4 as uuidv4 } from 'uuid';
+
+export interface OrderItemInput {
+  id: string;
+  quantity: number;
+}
 
 export class CreateOrderUseCase {
   constructor(
@@ -11,18 +17,22 @@ export class CreateOrderUseCase {
     private eventPublisher: OrderCreatedPublisher
   ) {}
 
-  async execute(customerId: string, productIds: string[], customerName: string) {
-    const items = [];
-    for (const id of productIds) {
-      const product = await this.productRepo.findById(id);
-      if (!product || product.stock <= 0) throw new Error(`Producto ${id} no disponible`);
-      items.push(product);
+  async execute(customerId: string, itemsInput: OrderItemInput[], customerName: string) {
+    const items: RetroProduct[] = [];
+    
+    for (const input of itemsInput) {
+      const product = await this.productRepo.findById(input.id);
+      
+      // Validación estricta de stock
+      if (!product || product.stock < input.quantity) {
+        throw new Error(`Producto ${input.id} no disponible o stock insuficiente`);
+      }
+
+      items.push({id: product.id,name: product.name,price: product.price,stock: product.stock,quantity: input.quantity});
     }
 
     const order = new Order(uuidv4(), customerId, items);
     await this.orderRepo.save(order);
-
-    const paymentToken = customerName.trim().toLowerCase() === 'zelda' ? 'pm_card_chargeDeclinedInsufficientFunds' : 'pm_card_visa';
 
     await this.eventPublisher.publish({
       orderId: order.id,
@@ -30,7 +40,7 @@ export class CreateOrderUseCase {
       total: order.total,
       items: order.items,
       createdAt: order.createdAt,
-      paymentMethodId: paymentToken
+      customerName: customerName, 
     });
 
     return order;

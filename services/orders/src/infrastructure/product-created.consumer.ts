@@ -21,13 +21,15 @@ export class ProductCreatedConsumer {
 
         try {
           const data = JSON.parse(message.value.toString());
-          
           // Creamos la entidad asegurándonos de que los tipos son correctos
           const product = new CatalogProduct(
             data.id, 
             data.name, 
             data.price, 
-            data.stock
+            data.stock,
+            data.brand,
+            data.description,
+            data.rating
           );
 
           // El repositorio usará UPSERT internamente para no duplicar

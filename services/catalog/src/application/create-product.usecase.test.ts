@@ -13,7 +13,7 @@ describe('CreateProductUseCase', () => {
   });
 
   it('debe guardar el producto y publicar el evento', async () => {
-    const input = { name: 'Zelda NES', price: 50, stock: 10, year: 1986 };
+    const input = { name: 'Zelda NES', price: 50, stock: 10, year: 1986 , brand: 'Nintendo' };
     
     const result = await useCase.execute(input);
 

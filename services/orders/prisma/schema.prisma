@@ -10,9 +10,23 @@ datasource db {
 
 model CatalogProduct {
   id    String @id // Recibe el UUID que viene de Catalog
-  name  String
+  name  String @unique
   price Float
   stock Int
+  brand String
+  description String?
+  rating Float
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  orderId   String
+  productId String
+  name      String
+  price     Float
+  quantity  Int    @default(1)
+
+  order     Order  @relation(fields: [orderId], references: [id])
 }
 
 model Order {
@@ -20,5 +34,6 @@ model Order {
   customerId String
   total      Float
   status     String   @default("PENDING")
+  items      OrderItem[]
   createdAt  DateTime @default(now())
 }

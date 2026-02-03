@@ -6,8 +6,11 @@
   "private": true,
   "description": "Retro tech e-commerce - Monorepo",
   "scripts": {
+    "stripe:login": "docker run --rm -it -v stripe_config:/root/.config/stripe stripe/stripe-cli login",
+    "stripe:listen": "docker run --rm -it -v stripe_config:/root/.config/stripe stripe/stripe-cli listen --forward-to host.docker.internal:3000/webhooks/stripe",
     "build": "pnpm --filter @retrovault/shared build && turbo run build",
-    "dev": "pnpm --filter @retrovault/shared build && turbo dev",
+    "dev": "pnpm --filter @retrovault/shared build && pnpm dev:ordered",
+    "dev:ordered": "concurrently --delay 5000 -k -p \"[{name}]\" -n \"CATALOG,GATEWAY,OTHERS\" -c \"cyan,magenta,yellow\" \"turbo dev --filter=@retrovault/catalog\" \"turbo dev --filter=@retrovault/gateway\" \"turbo dev --filter=!@retrovault/catalog --filter=!@retrovault/gateway\"",
     "test": "pnpm --filter @retrovault/shared build && turbo run test --concurrency=1",
     "test:cov": "pnpm --filter @retrovault/shared build && pnpm -r --workspace-concurrency=1 run test:cov",
     "db:push": "pnpm -r --workspace-concurrency=1 run db:push",
@@ -20,6 +23,7 @@
     "@types/node": "^25.0.9",
     "@types/uuid": "^10.0.0",
     "@vitest/coverage-v8": "^4.0.18",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "kafkajs": "^2.2.4",
     "prettier": "^3.7.4",
@@ -33,8 +37,8 @@
     "vitest": "^4.0.18"
   },
   "dependencies": {
-    "@retrovault/shared": "workspace:*",
     "@prisma/client": "6.19.2",
+    "@retrovault/shared": "workspace:*",
     "uuid": "^10.0.0"
   },
   "pnpm": {

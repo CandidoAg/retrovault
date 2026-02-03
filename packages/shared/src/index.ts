@@ -6,6 +6,7 @@ export interface RetroProduct {
   name: string;
   price: number;
   stock: number;
+  quantity: number;
 }
 
 export const isRetroYear = (year: number): boolean => {

@@ -7,9 +7,10 @@ import { Injectable } from '@nestjs/common';
 export class PaymentProcessedPublisher {
   private producer = kafka.producer();
 
-  async publish(transaction: Transaction, items: string[]) {
+  async publish(transaction: Transaction, items: string) {
     await this.producer.connect();
     
+
     const isSuccess = transaction.status === 'COMPLETED';
     const topic = isSuccess ? 'payment-completed' : 'payment-failed';
 
@@ -18,7 +19,7 @@ export class PaymentProcessedPublisher {
       orderId: transaction.orderId,
       amount: transaction.amount,
       status: transaction.status,
-      productIds: items, 
+      productNames: items, 
       occurredAt: new Date().toISOString()
     };
 
