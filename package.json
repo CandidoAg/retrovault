@@ -18,23 +18,23 @@
     "docker:down": "docker compose down -v"
   },
   "devDependencies": {
-    "@testcontainers/kafka": "^11.11.0",
-    "@testcontainers/postgresql": "^11.11.0",
-    "@types/node": "^25.0.9",
+    "@testcontainers/kafka": "^11.14.0",
+    "@testcontainers/postgresql": "^11.14.0",
+    "@types/node": "^25.5.2",
     "@types/uuid": "^10.0.0",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.4",
     "concurrently": "^9.2.1",
-    "eslint": "^9.39.2",
+    "eslint": "^9.39.4",
     "kafkajs": "^2.2.4",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.1",
     "prisma": "6.19.2",
     "shx": "^0.4.0",
-    "testcontainers": "^11.11.0",
+    "testcontainers": "^11.14.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
-    "turbo": "^2.7.5",
+    "turbo": "^2.9.5",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.4"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",
@@ -44,7 +44,22 @@
   "pnpm": {
     "overrides": {
       "prisma": "6.19.2",
-      "@prisma/client": "6.19.2"
+      "@prisma/client": "6.19.2",
+      "@isaacs/brace-expansion": "5.0.1",
+      "brace-expansion": "1.1.13",
+      "minimatch@^3.0.0": "3.1.4",
+      "minimatch@^10.0.0": "10.2.3",
+      "rollup": "4.60.1",
+      "vite": "7.3.2",
+      "serialize-javascript": "7.0.5",
+      "undici": "8.0.2",
+      "socket.io-parser": "4.2.6",
+      "effect": "3.20.0",
+      "defu": "6.1.5",
+      "picomatch": "4.0.4",
+      "qs": "6.14.2",
+      "ajv@^6.0.0": "6.14.0",
+      "ajv@^8.0.0": "8.18.0"
     }
   }
 }
