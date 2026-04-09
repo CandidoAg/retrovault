@@ -15,19 +15,11 @@
         "start": "node dist/main.js"
     },
     "dependencies": {
-<<<<<<< HEAD
         "@nestjs/common": "^11.1.18",
         "@nestjs/core": "^11.1.18",
         "@nestjs/platform-fastify": "^11.1.18",
         "@nestjs/platform-socket.io": "^11.1.18",
         "@nestjs/websockets": "^11.1.18",
-=======
-        "@nestjs/common": "^11.1.17",
-        "@nestjs/core": "^11.1.18",
-        "@nestjs/platform-fastify": "^11.1.18",
-        "@nestjs/platform-socket.io": "^11.1.12",
-        "@nestjs/websockets": "^11.1.12",
->>>>>>> 1a6c499e2b2bdccebb1e9214b7e925f77fac235c
         "@prisma/client": "^6.19.2",
         "dotenv": "^17.2.3",
         "kafkajs": "^2.2.4",
