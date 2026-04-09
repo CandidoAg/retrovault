@@ -16,8 +16,8 @@
     },
     "dependencies": {
         "@nestjs/common": "^11.1.17",
-        "@nestjs/core": "^11.1.17",
-        "@nestjs/platform-fastify": "^11.1.13",
+        "@nestjs/core": "^11.1.18",
+        "@nestjs/platform-fastify": "^11.1.18",
         "@nestjs/platform-socket.io": "^11.1.12",
         "@nestjs/websockets": "^11.1.12",
         "@prisma/client": "^6.19.2",
